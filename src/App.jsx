@@ -1,65 +1,81 @@
-import { useState, useEffect } from "react"
+// App.jsx
+import { BrowserRouter, Routes, Route, useParams, Navigate } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import UserPage from "./pages/UserPage";
+import { useState, useEffect } from "react";
+import { auth } from "./services/firebaseConfig";
 
-export default function App() {
-  const [seconds, setSeconds] = useState(1500) // 25 minutos
-  const [isRunning, setIsRunning] = useState(false)
+// 🔹 ProtectedRoute definido aquí mismo
+function ProtectedRoute({ children, uidParam }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isRunning) return
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
 
-    const interval = setInterval(() => {
-      setSeconds(prev => {
-        if (prev <= 1) {
-          clearInterval(interval)
-          setIsRunning(false)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
+  if (loading) return <p>Cargando...</p>;
 
-    return () => clearInterval(interval)
-  }, [isRunning])
-
-  const formatTime = (totalSeconds) => {
-    const mins = Math.floor(totalSeconds / 60)
-    const secs = totalSeconds % 60
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
+  // 🔹 Solo permite acceso si el usuario está logueado y el UID coincide
+  if (!user || user.uid !== uidParam) {
+    return <Navigate to="/" replace />;
   }
 
-  return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center gap-8">
-      <h1 className="text-5xl font-bold">Focustar ⭐</h1>
-
-      <div className="text-7xl font-mono">
-        {formatTime(seconds)}
-      </div>
-
-      <div className="flex gap-4">
-        <button
-          onClick={() => setIsRunning(true)}
-          className="bg-green-500 px-6 py-3 rounded-xl font-semibold"
-        >
-          Start
-        </button>
-
-        <button
-          onClick={() => setIsRunning(false)}
-          className="bg-yellow-500 px-6 py-3 rounded-xl font-semibold"
-        >
-          Pause
-        </button>
-
-        <button
-          onClick={() => {
-            setIsRunning(false)
-            setSeconds(1500)
-          }}
-          className="bg-red-500 px-6 py-3 rounded-xl font-semibold"
-        >
-          Reset
-        </button>
-      </div>
-    </div>
-  )
+  return children;
 }
+
+// 🔹 Wrapper para capturar UID desde la URL
+function ProtectedUserPageWrapper() {
+  const { uid } = useParams();
+  return (
+    <ProtectedRoute uidParam={uid}>
+      <UserPage />
+    </ProtectedRoute>
+  );
+}
+
+// 🔹 Wrapper para /user que redirige al UID del usuario logueado
+function UserRedirectWrapper() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  if (loading) return <p>Cargando...</p>;
+
+  if (!user) {
+    return <Navigate to="/" replace />; // no logueado → home
+  }
+
+  // logueado → redirige a su UID
+  return <Navigate to={`/user/${user.uid}`} replace />;
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+
+        {/* Redirigir /user → /user/:uid del usuario logueado */}
+        <Route path="/user" element={<UserRedirectWrapper />} />
+
+        {/* Ruta dinámica protegida */}
+        <Route path="/user/:uid" element={<ProtectedUserPageWrapper />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
