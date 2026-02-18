@@ -173,3 +173,33 @@ html, body, #root {
 
   animation: slideGlow 4s linear infinite;
 }
+
+
+/* ===== CARDS INVERTIDAS ===== */
+.inverted-card {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Inputs dentro de la card */
+.inverted-card input,
+.inverted-card textarea {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--bg-color);
+  transition: all 0.3s ease;
+}
+
+/* Botones dentro de la card */
+.inverted-card button {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.inverted-card button:hover {
+  opacity: 0.85;
+}
