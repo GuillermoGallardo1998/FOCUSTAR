@@ -41,7 +41,7 @@ export default function Header({ language, toggleLanguage }) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 h-20 px-6 md:px-12 flex items-center justify-between backdrop-blur-md bg-black/60 border-b border-white/10">
+      <header className="fixed top-0 left-0 w-full z-50 h-20 px-6 md:px-12 flex items-center justify-between backdrop-blur-md shadow-2xl border-b border-(--text-color)/10">
         {/* Logo */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -155,12 +155,19 @@ export default function Header({ language, toggleLanguage }) {
         language={language}
       />
 
-      <LoginSidebar
-        isOpen={openLogin}
-        onClose={() => setOpenLogin(false)}
-        language={language}
-        handleGoogleLogin={handleGoogleLogin}
-      />
+      <div
+        className={`fixed top-0 right-0 h-full w-full shadow-lg
+          transform transition-transform duration-300 ease-in-out
+          ${openLogin ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <LoginSidebar
+          isOpen={openLogin}
+          onClose={() => setOpenLogin(false)} // <--- esto se llama desde el botón interno
+          language={language}
+          handleGoogleLogin={handleGoogleLogin}
+        />
+      </div>
+
     </>
   );
 }
