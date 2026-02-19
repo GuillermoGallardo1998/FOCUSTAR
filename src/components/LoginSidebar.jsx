@@ -276,7 +276,7 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
   return (
     <div
       ref={formRef}
-      className="fixed top-0 right-0 w-1/4 min-w-100 h-full flex flex-col justify-baseline items-center bg-(--bg-color) text-(--text-color) shadow-2xl p-8 pt-30 z-50 overflow-y-auto border-l border-(--text-color)/10"
+      className="fixed top-0 right-0 w-1/4 min-w-100 h-full flex flex-col justify-baseline items-center bg-(--bg-color) text-(--text-color) shadow-2xl p-8 pt-30 z-60 overflow-y-auto border-l border-(--text-color)/10"
     >
       <h2 className="text-xl text-center font-semibold mb-4">
         {isRegistering ? t.register : t.login}
@@ -312,14 +312,14 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
       {!isRegistering ? (
         <form
             onSubmit={handleEmailLogin}
-            className="flex flex-col gap-3 mb-4 text-[var(--text-color)]"
+            className="flex flex-col gap-3 mb-4 text-(--text-color)"
           >
             <input
               type="email"
               placeholder={t.email}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="px-3 py-2 rounded bg-[var(--bg-color)] border border-white/20 focus:outline-none text-[var(--text-color)]"
+              className="px-3 py-2 rounded bg-(--bg-color) border border-white/20 focus:outline-none text-(--text-color)"
             />
             <div className="relative">
               <input
@@ -327,11 +327,11 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
                 placeholder={t.password}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="px-3 py-2 rounded bg-[var(--bg-color)] border border-white/20 w-full focus:outline-none text-[var(--text-color)]"
+                className="px-3 py-2 rounded bg-(--bg-color) border border-white/20 w-full focus:outline-none text-(--text-color)"
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[var(--text-color)]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-(--text-color)"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? "🙈" : "👁️"}
@@ -340,7 +340,7 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 text-[var(--text-color)]"
+              className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 text-(--text-color)"
             >
               {loading ? t.loading : t.login}
             </button>
@@ -348,7 +348,7 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="mt-2 text-sm text-[var(--text-color)] hover:underline self-start"
+              className="mt-2 text-sm text-(--text-color) hover:underline self-start"
             >
               {isES ? "Olvidé mi contraseña" : "Forgot Password"}
             </button>

@@ -6,6 +6,10 @@
 :root {
   --bg-color: #121212;
   --text-color: #EDEDED;
+  --smoke-white: #d4d4d4;
+
+  --text-shadow-strong: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  --component-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
 }
 
 /* Aplicación GLOBAL */

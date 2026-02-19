@@ -106,7 +106,7 @@ export default function Header({ language, toggleLanguage }) {
 
     <button
       onClick={toggleLanguage}
-      className="btn-glow w-1/2 min-w-[200px] max-w-sm px-4 py-2 rounded text-sm font-bold"
+      className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
     >
       {language === "es" ? "ES" : "EN"}
     </button>
@@ -116,7 +116,7 @@ export default function Header({ language, toggleLanguage }) {
         setOpenSettings(true);
         setOpenMenu(false);
       }}
-      className="btn-glow w-1/2 min-w-[200px] max-w-sm px-4 py-2 rounded text-sm font-bold flex items-center justify-center gap-2"
+      className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold flex items-center justify-center gap-2"
     >
       <span className="icon-spin inline-block text-lg leading-none">⚙</span>
       {language === "es" ? "Configuración" : "Settings"}
@@ -128,7 +128,7 @@ export default function Header({ language, toggleLanguage }) {
           handleLogout();
           setOpenMenu(false);
         }}
-        className="btn-glow w-1/2 min-w-[200px] max-w-sm px-4 py-2 rounded text-sm font-bold"
+        className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
       >
         {language === "es" ? "Cerrar sesión" : "Sign Out"}
       </button>
@@ -138,7 +138,7 @@ export default function Header({ language, toggleLanguage }) {
           setOpenLogin(true);
           setOpenMenu(false);
         }}
-        className="btn-glow w-1/2 min-w-[200px] max-w-sm px-4 py-2 rounded text-sm font-bold"
+        className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
       >
         {language === "es" ? "Iniciar sesión" : "Sign In"}
       </button>
@@ -156,7 +156,7 @@ export default function Header({ language, toggleLanguage }) {
       />
 
       <div
-        className={`fixed top-0 right-0 h-full w-full shadow-lg
+        className={`fixed top-0 right-0 h-full w-full z-60 shadow-lg
           transform transition-transform duration-300 ease-in-out
           ${openLogin ? "translate-x-0" : "translate-x-full"}`}
       >

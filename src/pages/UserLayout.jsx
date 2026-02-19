@@ -15,7 +15,7 @@ function UserLayout() {
     <>
       <Header language={language} toggleLanguage={toggleLanguage} />
 
-      <div className="pt-24 px-6 min-h-screen">
+      <div className="pt-20 px-6 min-h-screen">
         <Outlet context={{ language }} />
       </div>
 
