@@ -7,8 +7,8 @@ function UserAboutPage() {
   const { language } = useOutletContext();
 
   return (
-    <div className="min-h-screen bg-(--bg-color) text-(--text-color) px-6 py-16">
-      <div className="max-w-4xl mx-auto">
+    <div className=" bg-(--bg-color) text-(--text-color) px-10 pb-6 pt-20">
+      <div className="max-w-4xl mx-auto pt-10">
 
         <section className="space-y-6 mb-16">
           <h1 className="text-4xl md:text-5xl text-center font-bold tracking-tight text-shadow-(--text-shadow-strong)">
@@ -151,16 +151,14 @@ function UserAboutPage() {
           <h2 className="text-2xl font-semibold text-shadow-(--text-shadow-strong)">
             {language === "es" ? "Sobre el desarrollador" : "About the Developer"}
           </h2>
-
           <div className="flex flex-col md:flex-row items-center gap-10 w-full max-w-5xl">
             <div className="shrink-0">
               <img
                 src="/images/PhotoMemo.jpg"
                 alt="Guillermo Gallardo"
-                className="w-48 h-48 object-cover rounded-full border border-white/20 [box-shadow:var(--component-shadow)]"
+                className="w-48 h-48 object-cover rounded-full border border-(--text-color)/20 [box-shadow:var(--component-shadow)]"
               />
             </div>
-
             <div className="space-y-5 md:text-left">
               <p className="opacity-85 leading-relaxed">
                 {language === "es"
@@ -180,7 +178,6 @@ function UserAboutPage() {
             </div>
           </div>
         </section>
-
       </div>
 
       <Footer language={language} />

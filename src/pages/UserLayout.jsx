@@ -1,4 +1,5 @@
-// pages/UserLayout.jsx
+// UserLayout.jsx
+
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
@@ -14,12 +15,10 @@ function UserLayout() {
   return (
     <>
       <Header language={language} toggleLanguage={toggleLanguage} />
-
-      <div className="pt-20 px-6 min-h-screen">
+      <div className="min-h-screen">
         <Outlet context={{ language }} />
       </div>
-
-      <UserFloatingMenu />
+      <UserFloatingMenu language={language} />
     </>
   );
 }

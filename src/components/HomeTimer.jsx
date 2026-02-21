@@ -178,21 +178,21 @@ function HomeTimer({ language }) {
       <div className="flex flex-wrap gap-3 justify-center">
         <button
           onClick={handleStart}
-          className={`${baseBtn} bg-green-600 hover:bg-green-700 text-sm sm:text-base px-4 sm:px-6 py-2`}
+          className={`${baseBtn} bg-green-600 hover:bg-green-700 text-[#EDEDED] text-sm sm:text-base px-4 sm:px-6 py-2`}
         >
           {language === "es" ? "Iniciar" : "Play"}
         </button>
 
         <button
           onClick={handlePause}
-          className={`${baseBtn} bg-yellow-600 hover:bg-yellow-700 text-sm sm:text-base px-4 sm:px-6 py-2`}
+          className={`${baseBtn} bg-yellow-600 hover:bg-yellow-700 text-[#EDEDED] text-sm sm:text-base px-4 sm:px-6 py-2`}
         >
           {language === "es" ? "Pausar" : "Pause"}
         </button>
 
         <button
           onClick={resetTimer}
-          className={`${baseBtn} bg-red-600 hover:bg-red-700 text-sm sm:text-base px-4 sm:px-6 py-2`}
+          className={`${baseBtn} bg-red-600 hover:bg-red-700 text-[#EDEDED] text-sm sm:text-base px-4 sm:px-6 py-2`}
         >
           Reset
         </button>

@@ -7,7 +7,7 @@ function UserWelcomePage() {
   const { language } = useOutletContext();
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center text-center p-6">
+    <div className="min-h-screen pt-20 px-10 pb-6 flex flex-col items-center justify-center text-center">
       <h1 className="text-5xl font-bold text-(--text-color) mb-15 text-shadow-(--text-shadow-strong)">
         <TypeAnimation
           key={language}
@@ -25,21 +25,16 @@ function UserWelcomePage() {
           cursor={true}
         />
       </h1>
-
-      {/* Descripción */}
       <p className="max-w-3xl text-shadow-(--text-shadow-strong)">
         {language === "es"
           ? "Nos alegra que estés aquí. Gracias por probar nuestra plataforma."
           : "We are happy to have you here. Thank you for trying our platform."}
       </p>
-
       <p className="mt-5 max-w-3xl text-shadow-(--text-shadow-strong)">
         {language === "es"
           ? "En la esquina inferior derecha encontrarás el ícono que abre el menú de opciones para que puedas navegar cómodamente por la aplicación."
           : "In the bottom right corner you will find the icon that opens the options menu so you can navigate comfortably through the app."}
       </p>
-
-      {/* Logo circular */}
       <div className="mt-15 w-40 h-40 rounded-full bg-(--smoke-white) [box-shadow:var(--component-shadow)] flex items-center justify-center border-2 group">
         <img
           src="/icons/Focustar.png"

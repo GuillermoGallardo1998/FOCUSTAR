@@ -16,27 +16,25 @@ function RoutineBuilder({ userUid, language }) {
   };
 
   return (
-    <div className="border p-4 rounded flex flex-col gap-4">
-      <h2 className="text-xl font-bold">
+    <div className=" border border-(--text-color)/50 p-6 rounded-xl flex flex-col gap-6 [box-shadow:var(--component-shadow)]">
+      <h2 className="text-2xl text-center font-bold text-shadow-(--text-shadow-strong)">
         {language === "es" ? "Crear nueva rutina" : "Create new routine"}
       </h2>
-
       <input
         type="text"
         placeholder={language === "es" ? "Nombre de la rutina" : "Routine name"}
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="border p-2 rounded"
+        className="w-full p-2 rounded-xl bg-(--bg-color) border-2 border-(--text-color)/50 text-(--text-color) placeholder-(--text-color)/40 [box-shadow:var(--component-shadow-soft)] focus:outline-none"
       />
-
       <button
         onClick={handleCreate}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+        className="px-4 py-2 text-lg border-2 border-(--text-color)/50 rounded-xl font-semibold bg-(--text-color) text-(--bg-color) [box-shadow:var(--component-shadow-soft)] transition-all duration-200 ease-out hover:bg-(--bg-color) hover:text-(--text-color) cursor-pointer hover:-translate-y-0.5"
       >
         {language === "es" ? "Crear" : "Create"}
       </button>
 
-      {message && <p className="text-green-500">{message}</p>}
+      {message && <p className="text-(--text-color) text-shadow-(--text-shadow-strong)">{message}</p>}
     </div>
   );
 }
