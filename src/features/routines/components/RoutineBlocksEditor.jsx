@@ -166,44 +166,43 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
   };
 
   return (
-    <div className="mt-6 border-t pt-6 flex flex-col gap-6">
+    <div className="mt-2 border-t pt-6 flex flex-col gap-6">
 
       <h4 className="text-xl font-bold tracking-tight">
-        {language === "es" ? "Bloques" : "Blocks"}
+        {language === "es" ? "Bloques de enfoque" : "Focus Blocks"}
       </h4>
 
-      {/* LISTA DE BLOQUES */}
       {blocks.map((block) => (
         <div
           key={block.id}
-          className="inverted-card rounded-2xl shadow-md p-5 transition-all duration-200 hover:shadow-lg"
+          className="rounded-2xl p-6 transition-all duration-300 ease-in-out [box-shadow:var(--component-shadow-soft)] hover:[box-shadow:var(--component-shadow)]"
           style={{
-            borderLeft: `6px solid ${block.color}`,
+            backgroundColor: block.color,
           }}
         >
-          <div className="flex justify-between items-start gap-4">
 
-            {/* CONTENIDO */}
+
+
+          <div className="flex flex-col items-center gap-4">
             {block.editMode ? (
-              <div className="flex flex-col gap-3 w-full">
-
+              <div className="flex flex-col gap-4 w-full">
+                {/* Título */}
                 <input
                   type="text"
                   value={block.title}
                   onChange={(e) =>
                     setBlocks((prev) =>
                       prev.map((b) =>
-                        b.id === block.id
-                          ? { ...b, title: e.target.value }
-                          : b
+                        b.id === block.id ? { ...b, title: e.target.value } : b
                       )
                     )
                   }
-                  className="border rounded-xl p-3 text-lg font-semibold focus:outline-none"
+                  className="border border-(--bg-color)/50 rounded-xl bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p-3 text-lg font-semibold [box-shadow:var(--component-shadow-soft)] focus:outline-none"
                   placeholder="Título"
                 />
 
-                <div className="flex gap-2">
+                {/* Horas, minutos, segundos */}
+                <div className="flex gap-3">
                   <input
                     type="number"
                     min="0"
@@ -211,13 +210,11 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
                     onChange={(e) =>
                       setBlocks((prev) =>
                         prev.map((b) =>
-                          b.id === block.id
-                            ? { ...b, editHours: e.target.value }
-                            : b
+                          b.id === block.id ? { ...b, editHours: Number(e.target.value) } : b
                         )
                       )
                     }
-                    className="border rounded-xl p-3 w-20 text-center"
+                    className="border border-(--bg-color)/50 rounded-xl w-full bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p-3 font-semibold text-center [box-shadow:var(--component-shadow-soft)] focus:outline-none flex-1"
                     placeholder="HH"
                   />
                   <input
@@ -234,7 +231,7 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
                         )
                       )
                     }
-                    className="border rounded-xl p-3 w-20 text-center"
+                    className="border border-(--bg-color)/50 rounded-xl w-full bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p-3 font-semibold text-center [box-shadow:var(--component-shadow-soft)] focus:outline-none flex-1"
                     placeholder="MM"
                   />
                   <input
@@ -251,49 +248,50 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
                         )
                       )
                     }
-                    className="border rounded-xl p-3 w-20 text-center"
+                    className="border border-(--bg-color)/50 rounded-xl w-full bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p-3 font-semibold text-center [box-shadow:var(--component-shadow-soft)] focus:outline-none flex-1"
                     placeholder="SS"
                   />
                 </div>
 
-                <input
-                  type="text"
+                {/* Nota */}
+                <textarea
                   value={block.note || ""}
                   onChange={(e) =>
                     setBlocks((prev) =>
                       prev.map((b) =>
-                        b.id === block.id
-                          ? { ...b, note: e.target.value }
-                          : b
+                        b.id === block.id ? { ...b, note: e.target.value } : b
                       )
                     )
                   }
-                  className="border rounded-xl p-3"
+                  className="border border-(--bg-color)/50 rounded-xl w-full bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p p-3 [box-shadow:var(--component-shadow-soft)] focus:outline-none"
                   placeholder="Nota"
-                />
+                ></textarea>
 
+                {/* Selector de color */}
                 <input
                   type="color"
                   value={block.color}
                   onChange={(e) =>
                     setBlocks((prev) =>
                       prev.map((b) =>
-                        b.id === block.id
-                          ? { ...b, color: e.target.value }
-                          : b
+                        b.id === block.id ? { ...b, color: e.target.value } : b
                       )
                     )
                   }
-                  className="w-14 h-10 rounded-lg cursor-pointer"
+                  className="w-full h-10 border border-(--bg-color)/50 cursor-pointer [box-shadow:var(--component-shadow-soft)]"
                 />
 
-                <button onClick={() => handleSave(block)}>
+                {/* Botón Guardar */}
+                <button
+                  onClick={() => handleSave(block)}
+                  className="px-4 py-2 border border-(--bg-color)/50 rounded-xl font-semibold bg-(--text-color) text-(--bg-color) text-lg [box-shadow:var(--component-shadow-soft)] transition-all duration-200 ease-out hover:bg-(--bg-color) hover:text-(--text-color) cursor-pointer"
+                >
                   {language === "es" ? "Guardar" : "Save"}
                 </button>
               </div>
             ) : (
-              <div className="flex flex-col gap-1">
-
+              <div className="flex flex-col gap-2 w-full">
+                {/* Checkbox y título */}
                 <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
@@ -301,77 +299,75 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
                     onChange={() =>
                       handleToggleCompleted(block.id, block.completed)
                     }
-                    className="w-5 h-5"
-                    style={{ accentColor: "var(--bg-color)" }}
+                    className="w-5 h-5 accent-(--bg-color) border border-(--bg-color)/50"
                   />
-
                   <p
-                    className={`text-lg font-bold ${
-                      block.completed ? "line-through opacity-50" : ""
+                    className={`text-lg font-bold text-(--bg-color) ${
+                      block.completed ? "line-through" : ""
                     }`}
                   >
                     {block.title}
                   </p>
                 </div>
 
-                <p className="text-sm font-mono opacity-70">
-                  {formatTime(block.duration)}
-                </p>
+                {/* Duración */}
+                <p className="text-(--bg-color) font-semibold">{formatTime(block.duration)}</p>
 
+                {/* Nota */}
                 {block.note && (
-                  <p className="text-sm opacity-60">
-                    {block.note}
-                  </p>
+                  <textarea
+                    value={block.note}
+                    readOnly
+                    className="w-full border border-(--bg-color)/50 rounded-xl p-2 bg-(--text-color) text-(--bg-color) [box-shadow:var(--component-shadow-soft)] resize-y focus:outline-none"
+                  />
                 )}
-              </div>
-            )}
 
-            {/* BOTONES */}
-            {!block.editMode && (
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() =>
-                    setBlocks((prev) =>
-                      prev.map((b) =>
-                        b.id === block.id
-                          ? { ...b, editMode: true }
-                          : b
+                {/* Botones Editar y Eliminar */}
+                <div className="flex gap-3 mt-2">
+                  <button
+                    className="px-4 py-2 border border-(--bg-color)/50 rounded-xl font-semibold bg-(--text-color) text-(--bg-color) text-lg [box-shadow:var(--component-shadow-soft)] transition-all duration-200 ease-out hover:bg-(--bg-color) hover:text-(--text-color) cursor-pointer flex-1"
+                    onClick={() =>
+                      setBlocks((prev) =>
+                        prev.map((b) =>
+                          b.id === block.id ? { ...b, editMode: true } : b
+                        )
                       )
-                    )
-                  }
-                >
-                  {language === "es" ? "Editar" : "Edit"}
-                </button>
+                    }
+                  >
+                    {language === "es" ? "Editar" : "Edit"}
+                  </button>
 
-                <button
-                  onClick={() => handleDeleteBlock(block.id)}
-                >
-                  {language === "es" ? "Eliminar" : "Delete"}
-                </button>
+                  <button
+                    className="bg-red-600 hover:bg-red-700 text-[#EDEDED] text-xl px-4 py-2 rounded-xl [box-shadow:var(--component-shadow-soft)] cursor-pointer font-semibold text-shadow-(--text-shadow-strong) flex-1"
+                    onClick={() => handleDeleteBlock(block.id)}
+                  >
+                    {language === "es" ? "Eliminar" : "Delete"}
+                  </button>
+                </div>
               </div>
             )}
           </div>
         </div>
       ))}
 
-      {/* CREAR BLOQUE */}
-      <div className="inverted-card rounded-2xl p-5 shadow-inner flex flex-col gap-3">
-
+      <div className="inverted-card gap-3 flex flex-col bg-(--text-color) rounded-2xl p-5 border transition-all duration-300 ease-in-out border-(--text-color) [box-shadow:var(--component-shadow-soft)]">
         <input
           type="text"
           placeholder="Título"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
-          className="border rounded-xl p-3 text-lg font-semibold"
+          className="border border-(--bg-color)/50 rounded-xl bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p-3 text-lg font-semibold [box-shadow:var(--component-shadow-soft)] focus:outline-none"
         />
-
         <div className="flex gap-2">
           <input
             type="number"
             placeholder="HH"
+            max="100"
             value={newHours}
-            onChange={(e) => setNewHours(e.target.value)}
-            className="border rounded-xl p-3 w-20 text-center"
+            onChange={(e) => 
+              setNewHours(Math.min(100, Number(e.target.value)))
+            }
+            className="border border-(--bg-color)/50 rounded-xl w-full bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p-3 font-semibold text-center [box-shadow:var(--component-shadow-soft)] focus:outline-none flex-1"
           />
           <input
             type="number"
@@ -379,9 +375,9 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
             max="59"
             value={newMinutes}
             onChange={(e) =>
-              setNewMinutes(Math.min(59, e.target.value))
+              setNewMinutes(Math.min(59, Number(e.target.value)))
             }
-            className="border rounded-xl p-3 w-20 text-center"
+            className="border border-(--bg-color)/50 rounded-xl w-full bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p-3 font-semibold text-center [box-shadow:var(--component-shadow-soft)] focus:outline-none flex-1"
           />
           <input
             type="number"
@@ -389,44 +385,41 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
             max="59"
             value={newSeconds}
             onChange={(e) =>
-              setNewSeconds(Math.min(59, e.target.value))
+              setNewSeconds(Math.min(59, Number(e.target.value)))
             }
-            className="border rounded-xl p-3 w-20 text-center"
+            className="border border-(--bg-color)/50 rounded-xl w-full bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p-3 font-semibold text-center [box-shadow:var(--component-shadow-soft)] focus:outline-none flex-1"
           />
         </div>
-
-        <input
-          type="text"
+        <textarea
           placeholder="Nota"
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
-          className="border rounded-xl p-3"
-        />
-
+          className="border border-(--bg-color)/50 rounded-xl w-full bg-(--text-color) text-(--bg-color) transition-all duration-300 ease-in-out p p-3 [box-shadow:var(--component-shadow-soft)] focus:outline-none"
+        ></textarea>
         <input
           type="color"
           value={newColor}
           onChange={(e) => setNewColor(e.target.value)}
-          className="w-14 h-10 rounded-lg cursor-pointer"
+          className="w-full h-10 border border-(--bg-color)/50 cursor-pointer [box-shadow:var(--component-shadow-soft)]"
         />
-
-        <button onClick={handleAddBlock}>
+        <button 
+          onClick={handleAddBlock}
+          className="px-4 py-2 border border-(--bg-color)/50 rounded-xl font-semibold bg-(--text-color) text-(--bg-color) text-lg [box-shadow:var(--component-shadow-soft)] transition-all duration-200 ease-out hover:bg-(--bg-color) hover:text-(--text-color) cursor-pointer"
+        >
           {language === "es" ? "Agregar bloque" : "Add block"}
         </button>
       </div>
 
       <button
         onClick={handleDeleteRoutine}
-        className="main-button"
+        className="bg-red-600 hover:bg-red-700 text-[#EDEDED] text-xl px-4 py-2 rounded-2xl [box-shadow:var(--component-shadow-soft)] cursor-pointer font-bold text-shadow-(--text-shadow-strong)"
       >
         {language === "es"
-          ? "Eliminar toda la rutina"
-          : "Delete entire routine"}
+          ? "Eliminar rutina"
+          : "Delete routine"}
       </button>
-
     </div>
   );
-
 }
 
 export default RoutineBlocksEditor;

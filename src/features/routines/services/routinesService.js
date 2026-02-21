@@ -59,27 +59,55 @@ export const getRoutineBlocks = async (routineId) => {
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-// 🔹 DESACTIVAR TODAS LAS RUTINAS DEL USUARIO
-export const stopAllUserRoutines = async (uid) => {
+
+
+
+
+
+
+
+
+
+
+
+
+// 🔹 Poner en pausa todas las demás rutinas activas del usuario
+export const pauseOtherUserRoutines = async (uid, currentRoutineId) => {
   const q = query(
     collection(db, "routines"),
     where("uid", "==", uid),
     where("isRunning", "==", true)
   );
   const snapshot = await getDocs(q);
-  const updates = snapshot.docs.map(docSnap =>
-    updateDoc(docSnap.ref, {
-      isRunning: false,
-      updatedAt: serverTimestamp()
-    })
-  );
+
+  const updates = snapshot.docs
+    .filter(docSnap => docSnap.id !== currentRoutineId) // ignorar la que vas a iniciar
+    .map(docSnap =>
+      updateDoc(docSnap.ref, {
+        isRunning: false,
+        updatedAt: serverTimestamp()
+      })
+    );
+
   await Promise.all(updates);
 };
 
-// 🔥 INICIAR RUTINA (100% server based)
+// 🔹 INICIAR RUTINA
 export const startRoutine = async (routineId, uid) => {
+  if (!routineId || !uid) return;
+
   const routineRef = doc(db, "routines", routineId);
-  await stopAllUserRoutines(uid);
+  const routineSnap = await getDoc(routineRef);
+  if (!routineSnap.exists()) return;
+  const routineData = routineSnap.data();
+
+  // 🔹 Solo pausar otras rutinas si esta no estaba corriendo
+  if (!routineData.isRunning) {
+    await pauseOtherUserRoutines(uid, routineId);
+  }
+
+  // 🔹 Si ya estaba corriendo, no hacemos nada
+  if (routineData.isRunning) return;
 
   const blocksSnapshot = await getDocs(
     query(collection(db, "routines", routineId, "blocks"), orderBy("order", "asc"))
@@ -89,21 +117,28 @@ export const startRoutine = async (routineId, uid) => {
   let firstIndex = 0;
   const blocks = blocksSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
   while (firstIndex < blocks.length && blocks[firstIndex].completed) firstIndex++;
-
   if (firstIndex >= blocks.length) return;
 
   const firstBlock = blocks[firstIndex];
-  const durationSeconds = firstBlock.duration * 60;
+
+  // 🔹 Usar remaining guardado si estaba pausada
+  const remaining = routineData.remainingSeconds > 0 ? routineData.remainingSeconds : firstBlock.duration;
+  const blockStartedAt = routineData.blockStartedAt || serverTimestamp();
 
   await updateDoc(routineRef, {
     isRunning: true,
     currentBlockIndex: firstIndex,
-    blockStartedAt: serverTimestamp(),
-    blockDurationSeconds: durationSeconds,
-    remainingSeconds: durationSeconds,
+    blockStartedAt,
+    blockDurationSeconds: firstBlock.duration,
+    remainingSeconds: remaining,
     updatedAt: serverTimestamp()
   });
 };
+
+
+
+
+
 
 // 🔥 PAUSAR RUTINA
 export const pauseRoutine = async (routineId, remainingSeconds) => {
@@ -114,6 +149,10 @@ export const pauseRoutine = async (routineId, remainingSeconds) => {
     updatedAt: serverTimestamp()
   });
 };
+
+
+
+
 
 // 🔥 AVANZAR BLOQUE
 export const advanceBlock = async (routineId) => {
@@ -144,7 +183,7 @@ export const advanceBlock = async (routineId) => {
   }
 
   const nextBlock = blocks[nextIndex];
-  const durationSeconds = nextBlock.duration * 60;
+  const durationSeconds = nextBlock.duration;
 
   await updateDoc(routineRef, {
     currentBlockIndex: nextIndex,

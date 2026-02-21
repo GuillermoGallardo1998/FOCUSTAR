@@ -55,7 +55,7 @@ function Footer({ language }) {
   }
 
   return (
-    <footer className="min-h-full flex flex-col justify-start border-t border-(--text-color) pt-30 px-4 sm:px-6 lg:px-8 space-y-12 md:space-y-16">
+    <footer className="min-h-full flex flex-col justify-start border-t border-(--text-color)/50 pt-30 pb-10 px-4 sm:px-6 lg:px-8 space-y-12 md:space-y-16">
       {/* 🔹 FORMULARIO */}
       <div className="max-w-2xl mx-auto space-y-6 text-center">
         <h3 className="text-lg sm:text-xl font-semibold text-shadow-(--text-shadow-strong)">
@@ -71,7 +71,7 @@ function Footer({ language }) {
               placeholder={language === "es" ? "Nombre" : "Name"}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full p-3 rounded bg-(--bg-color) border-2 border-(--text-color)/50 text-(--text-color) placeholder-(--text-color)/40 [box-shadow:var(--component-shadow)]"
+              className="w-full p-3 rounded-xl bg-(--bg-color) border-2 border-(--text-color)/50 text-(--text-color) placeholder-(--text-color)/40 [box-shadow:var(--component-shadow)] focus:outline-none"
             />
             {errors.name && (
               <p className="text-(--text-color)/70 text-xs mt-1">{errors.name}</p>
@@ -86,7 +86,7 @@ function Footer({ language }) {
               }
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="w-full p-3 rounded bg-(--bg-color) border-2 border-(--text-color)/50 text-(--text-color) placeholder-(--text-color)/40 [box-shadow:var(--component-shadow)]"
+              className="w-full p-3 rounded-xl bg-(--bg-color) border-2 border-(--text-color)/50 text-(--text-color) placeholder-(--text-color)/40 [box-shadow:var(--component-shadow)] focus:outline-none"
             />
             {errors.phone && (
               <p className="text-(--text-color)/70 text-xs mt-1">{errors.phone}</p>
@@ -99,7 +99,7 @@ function Footer({ language }) {
               placeholder={language === "es" ? "Correo electrónico" : "Email"}
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full p-3 rounded bg-(--bg-color) border-2 border-(--text-color)/50 text-(--text-color) placeholder-(--text-color)/40 [box-shadow:var(--component-shadow)]"
+              className="w-full p-3 rounded-xl bg-(--bg-color) border-2 border-(--text-color)/50 text-(--text-color) placeholder-(--text-color)/40 [box-shadow:var(--component-shadow)] focus:outline-none"
             />
             {errors.email && (
               <p className="text-(--text-color)/70 text-xs mt-1">{errors.email}</p>
@@ -116,7 +116,7 @@ function Footer({ language }) {
               value={form.subject}
               onChange={(e) => setForm({ ...form, subject: e.target.value })}
               rows="4"
-              className="w-full p-3 rounded bg-(--bg-color) border-2 border-(--text-color)/50 text-(--text-color) placeholder-(--text-color)/40 [box-shadow:var(--component-shadow)]"
+              className="w-full p-3 rounded-xl bg-(--bg-color) border-2 border-(--text-color)/50 text-(--text-color) placeholder-(--text-color)/40 [box-shadow:var(--component-shadow)] focus:outline-none"
             />
             {errors.subject && (
               <p className="text-(--text-color)/70 text-xs mt-1">{errors.subject}</p>
@@ -125,7 +125,7 @@ function Footer({ language }) {
 
           <button
             type="submit"
-            className="mt-2 py-3 rounded-lg font-semibold bg-(--text-color) text-(--bg-color) hover:transition transform hover:scale-95"
+            className="mt-2 py-3 rounded-xl font-semibold bg-(--text-color) text-(--bg-color) hover:transition transform hover:scale-95 [box-shadow:var(--component-shadow)]"
           >
             {language === "es" ? "Enviar mensaje" : "Send message"}
           </button>
@@ -147,7 +147,7 @@ function Footer({ language }) {
             : "Need to send files or screenshots? Send it directly via Gmail:"}{" "}
 
           <a
-            href="https://mail.google.com/mail/?view=cm&fs=1&to=guillermogallardopino@gmail.com&su=Contacto%20desde%20Focustar&body=Hola%20Guillermo,%0A%0ATe%20contacto%20desde%20tu%20portafolio.%20Adjunto%20la%20información%20correspondiente.%0A%0ASaludos."
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=guillermogallardopino@gmail.com&su=Contacto%20desde%20Focustar&body=Hola%20Guillermo,%0A%0ATe%20contacto%20desde%20Focustar%20Adjunto%20la%20información%20correspondiente.%0A%0ASaludos."
             target="_blank"
             rel="noopener noreferrer"
             className="underline hover:opacity-100 transition"
@@ -185,7 +185,7 @@ function Footer({ language }) {
             <img
               src="/icons/Mail.png"
               alt="Email"
-              className="w-10 h-10 opacity-80 hover:opacity-10"
+              className="w-10 h-10 opacity-80 hover:opacity-100"
             />
           </a>
           <a
@@ -203,7 +203,7 @@ function Footer({ language }) {
         </div>
       </div>
 
-      <div className="text-sm opacity-70 pt-6 border-t border-white/5 text-center">
+      <div className="text-sm opacity-70 pt-6 border-t border-(--text-color)/20 text-center">
         {language === "es"
           ? "© 2026 Focustar — Desarrollado por Guillermo Gallardo. Todos los derechos reservados."
           : "© 2026 Focustar — Developed by Guillermo Gallardo. All rights reserved."}

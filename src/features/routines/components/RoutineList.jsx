@@ -1,7 +1,5 @@
 // RoutineList.jsx
 
-"use client";
-
 import { useEffect, useState } from "react";
 import { listenUserRoutines, updateRoutineOrder } from "../services/routinesService";
 import RoutineCard from "./RoutineCard";
@@ -45,7 +43,6 @@ function RoutineList({ userUid, language }) {
     return () => unsubscribe();
   }, [userUid]);
 
-  // 🔥 DRAG END
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
@@ -53,21 +50,18 @@ function RoutineList({ userUid, language }) {
 
     const oldIndex = routines.findIndex(r => r.id === active.id);
     const newIndex = routines.findIndex(r => r.id === over.id);
-
     const newOrder = arrayMove(routines, oldIndex, newIndex);
 
-    // 🔥 Actualiza estado visual inmediato
     setRoutines(newOrder);
 
-    // 🔥 Guarda nuevo orden en Firebase
     for (let i = 0; i < newOrder.length; i++) {
       await updateRoutineOrder(newOrder[i].id, i);
     }
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">
+    <div className="mb-14">
+      <h2 className="text-2xl text-center font-bold mb-6">
         {language === "es" ? "Tus rutinas" : "Your routines"}
       </h2>
 

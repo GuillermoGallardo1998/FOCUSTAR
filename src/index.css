@@ -10,6 +10,7 @@
 
   --text-shadow-strong: 2px 2px 8px rgba(0, 0, 0, 0.5);
   --component-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+  --component-shadow-soft: 0 0 30px rgba(0, 0, 0, 0.3);
 }
 
 /* Aplicación GLOBAL */
@@ -179,31 +180,33 @@ html, body, #root {
 }
 
 
-/* ===== CARDS INVERTIDAS ===== */
-.inverted-card {
-  background-color: var(--text-color);
-  color: var(--bg-color);
-  border-radius: 20px;
-  transition: all 0.3s ease;
+
+
+
+
+
+
+
+
+
+
+
+/* Animación de entrada desde la derecha */
+.slide-in {
+  opacity: 0;
+  transform: translateX(30px);
+  animation: slideIn 0.3s ease-out forwards;
 }
 
-/* Inputs dentro de la card */
-.inverted-card input,
-.inverted-card textarea {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  border: 1px solid var(--bg-color);
-  transition: all 0.3s ease;
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* Botones dentro de la card */
-.inverted-card button {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  border: none;
-  transition: all 0.2s ease;
-}
-
-.inverted-card button:hover {
-  opacity: 0.85;
-}
+/* delays escalonados */
+.delay-1 { animation-delay: 0.4s; }
+.delay-2 { animation-delay: 0.3s; }
+.delay-3 { animation-delay: 0.2s; }
+.delay-4 { animation-delay: 0.1s; }

@@ -41,11 +41,11 @@ export default function Header({ language, toggleLanguage }) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 h-20 px-6 md:px-12 flex items-center justify-between backdrop-blur-md shadow-2xl border-b border-(--text-color)/10">
+      <header className="fixed top-0 left-0 w-full z-50 h-20 px-6 md:px-12 flex items-center justify-between backdrop-blur-md border-b border-(--text-color)/10 [box-shadow:var(--component-shadow)]">
         {/* Logo */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="text-2xl md:text-3xl font-bold tracking-widest logo-pulse select-none cursor-pointer hover:opacity-80 transition"
+          className="text-2xl md:text-3xl font-bold tracking-widest logo-pulse select-none cursor-pointer hover:opacity-80 transition text-shadow-(--text-shadow-strong)"
         >
           FOCUSTAR
         </button>

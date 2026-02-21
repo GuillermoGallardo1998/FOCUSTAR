@@ -10,7 +10,6 @@ import RoutineBlocksEditor from "./RoutineBlocksEditor";
 function RoutineCard({ id, routine, language }) {
   const [open, setOpen] = useState(false);
 
-  // 🔹 Hook de dnd-kit
   const {
     attributes,
     listeners,
@@ -19,7 +18,6 @@ function RoutineCard({ id, routine, language }) {
     transition
   } = useSortable({ id });
 
-  // 🔹 Estilo dinámico para animación
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
@@ -30,26 +28,27 @@ function RoutineCard({ id, routine, language }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
-      className="border p-4 rounded bg-gray-50 flex flex-col gap-4"
+      className="border border-(--text-color)/50 p-4 rounded-xl bg-(--bg-color) [box-shadow:var(--component-shadow)] flex flex-col gap-4 relative"
     >
-      {/* Nombre de la rutina */}
-      <h3 className="font-semibold text-lg">{routine.name}</h3>
+      <div
+        {...listeners}
+        className="text-xl cursor-grab active:cursor-grabbing text-(--text-color) absolute top-4 right-4"
+      >
+        ⋮⋮
+      </div>
+      <h3 className="font-bold text-xl text-shadow-(--text-shadow-strong)">{routine.name}</h3>
 
-      {/* MOTOR DE EJECUCIÓN */}
       <RoutinePlayer routine={routine} />
 
-      {/* Botón para abrir editor */}
       <button
         onClick={() => setOpen(!open)}
-        className="text-blue-500 text-sm mt-2"
+        className="bg-(--text-color) text-(--bg-color) text-xl cursor-pointer border border-(--text-color)/50 rounded-xl p-1 [box-shadow:var(--component-shadow)] hover:bg-(--bg-color) hover:text-(--text-color) font-bold"
       >
         {open
           ? language === "es" ? "Cerrar" : "Close"
-          : language === "es" ? "Editar bloques" : "Edit blocks"}
+          : language === "es" ? "Editar Rutina" : "Edit Routine"}
       </button>
 
-      {/* Editor de bloques */}
       {open && (
         <RoutineBlocksEditor routineId={routine.id} language={language} />
       )}
