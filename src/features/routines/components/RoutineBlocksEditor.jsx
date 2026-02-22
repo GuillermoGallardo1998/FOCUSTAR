@@ -8,7 +8,8 @@ import {
   updateBlock,
   deleteBlock,
   resetRoutine,
-  deleteRoutine
+  deleteRoutine,
+  updateRoutineTimestamp
 } from "../services/routinesService";
 
 function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
@@ -56,48 +57,52 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
   }, [routineId]);
 
   // 🔹 Agregar bloque
-  const handleAddBlock = async () => {
-    if (!newTitle) return;
+const handleAddBlock = async () => {
+  if (!newTitle) return;
 
-    const totalSeconds =
-      (Number(newHours) || 0) * 3600 +
-      (Number(newMinutes) || 0) * 60 +
-      (Number(newSeconds) || 0);
+  const totalSeconds =
+    (Number(newHours) || 0) * 3600 +
+    (Number(newMinutes) || 0) * 60 +
+    (Number(newSeconds) || 0);
 
-    if (totalSeconds <= 0) return;
+  if (totalSeconds <= 0) return;
 
-    const newBlock = {
-      order: blocks.length,
-      title: newTitle,
-      type: "focus",
-      duration: totalSeconds,
-      note: newNote,
-      color: newColor,
-      completed: false,
-    };
-
-    const createdBlockId = await createBlock(routineId, newBlock);
-
-    setBlocks((prev) => [
-      ...prev,
-      {
-        id: createdBlockId,
-        ...newBlock,
-        editMode: false,
-        editHours: 0,
-        editMinutes: 0,
-        editSeconds: 0,
-      },
-    ]);
-
-    setNewTitle("");
-    setNewNote("");
-    setNewColor("#2563eb");
-    setNewHours("");
-    setNewMinutes("");
-    setNewSeconds("");
+  const newBlock = {
+    order: blocks.length,
+    title: newTitle,
+    type: "focus",
+    duration: totalSeconds,
+    note: newNote,
+    color: newColor,
+    completed: false,
   };
 
+  const createdBlockId = await createBlock(routineId, newBlock);
+
+  // 🔹 ACTUALIZAR FECHA DE ÚLTIMA MODIFICACIÓN
+  await updateRoutineTimestamp(routineId);
+
+  setBlocks((prev) => [
+    ...prev,
+    {
+      id: createdBlockId,
+      ...newBlock,
+      editMode: false,
+      editHours: 0,
+      editMinutes: 0,
+      editSeconds: 0,
+    },
+  ]);
+
+  setNewTitle("");
+  setNewNote("");
+  setNewColor("#2563eb");
+  setNewHours("");
+  setNewMinutes("");
+  setNewSeconds("");
+};
+
+  // 🔹 Guardar bloque editado
   // 🔹 Guardar bloque editado
   const handleSave = async (block) => {
     const totalSeconds =
@@ -116,6 +121,10 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
     };
 
     await updateBlock(routineId, block.id, updatedData);
+
+    // 🔹 ESTA ES LA LÍNEA QUE FALTABA
+    await updateRoutineTimestamp(routineId);
+
     await resetRoutine(routineId);
 
     alert(
@@ -164,6 +173,37 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
     await deleteRoutine(routineId);
     onRoutineDeleted?.();
   };
+
+// Mover bloque hacia arriba
+const moveBlockUp = async (index) => {
+  if (index === 0) return; // Ya está en la primera posición
+  const newBlocks = [...blocks];
+  [newBlocks[index - 1], newBlocks[index]] = [newBlocks[index], newBlocks[index - 1]];
+  const updatedBlocks = newBlocks.map((b, i) => ({ ...b, order: i }));
+  setBlocks(updatedBlocks);
+  await saveBlocksOrder(updatedBlocks);
+};
+
+// Mover bloque hacia abajo
+const moveBlockDown = async (index) => {
+  if (index === blocks.length - 1) return; // Ya está en la última posición
+  const newBlocks = [...blocks];
+  [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
+  const updatedBlocks = newBlocks.map((b, i) => ({ ...b, order: i }));
+  setBlocks(updatedBlocks);
+  await saveBlocksOrder(updatedBlocks);
+};
+
+  // 🔹 Guardar orden actualizado en Firebase
+const saveBlocksOrder = async (updatedBlocks) => {
+  try {
+    for (const block of updatedBlocks) {
+      await updateBlock(routineId, block.id, { order: block.order });
+    }
+  } catch (error) {
+    console.error("Error guardando el orden de los bloques:", error);
+  }
+};
 
   return (
     <div className="mt-2 border-t pt-6 flex flex-col gap-6">
@@ -292,17 +332,15 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
             ) : (
               <div className="flex flex-col gap-2 w-full">
                 {/* Checkbox y título */}
-                <div className="flex items-center gap-3">
+                <div className="flex gap-3 items-start w-full">
                   <input
                     type="checkbox"
                     checked={block.completed || false}
-                    onChange={() =>
-                      handleToggleCompleted(block.id, block.completed)
-                    }
-                    className="w-5 h-5 accent-(--bg-color) border border-(--bg-color)/50"
+                    onChange={() => handleToggleCompleted(block.id, block.completed)}
+                    className="w-5 h-5 accent-(--bg-color) border border-(--bg-color)/50 rounded mt-1 shrink-0"
                   />
                   <p
-                    className={`text-lg font-bold text-(--bg-color) ${
+                    className={`flex-1 min-w-0 text-lg font-bold text-(--bg-color) wrap-break-word whitespace-normal ${
                       block.completed ? "line-through" : ""
                     }`}
                   >
@@ -321,6 +359,22 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
                     className="w-full border border-(--bg-color)/50 rounded-xl p-2 bg-(--text-color) text-(--bg-color) [box-shadow:var(--component-shadow-soft)] resize-y focus:outline-none"
                   />
                 )}
+
+                {/* Botones subir/bajar */}
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => moveBlockUp(blocks.findIndex(b => b.id === block.id))}
+                    className="px-4 py-2 border border-(--bg-color)/50 rounded-xl font-semibold bg-(--text-color) text-(--bg-color) text-lg [box-shadow:var(--component-shadow-soft)] transition-all duration-200 ease-out hover:bg-(--bg-color) hover:text-(--text-color) cursor-pointer flex-1"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    onClick={() => moveBlockDown(blocks.findIndex(b => b.id === block.id))}
+                    className="px-4 py-2 border border-(--bg-color)/50 rounded-xl font-semibold bg-(--text-color) text-(--bg-color) text-lg [box-shadow:var(--component-shadow-soft)] transition-all duration-200 ease-out hover:bg-(--bg-color) hover:text-(--text-color) cursor-pointer flex-1"
+                  >
+                    ↓
+                  </button>
+                </div>
 
                 {/* Botones Editar y Eliminar */}
                 <div className="flex gap-3 mt-2">
