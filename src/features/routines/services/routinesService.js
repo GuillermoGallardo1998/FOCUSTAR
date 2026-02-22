@@ -84,9 +84,8 @@ export const pauseOtherUserRoutines = async (uid, currentRoutineId) => {
     .filter(docSnap => docSnap.id !== currentRoutineId) // ignorar la que vas a iniciar
     .map(docSnap =>
       updateDoc(docSnap.ref, {
-        isRunning: false,
-        updatedAt: serverTimestamp()
-      })
+  isRunning: false
+})
     );
 
   await Promise.all(updates);
@@ -126,16 +125,21 @@ export const startRoutine = async (routineId, uid) => {
   const blockStartedAt = routineData.blockStartedAt || serverTimestamp();
 
   await updateDoc(routineRef, {
-    isRunning: true,
-    currentBlockIndex: firstIndex,
-    blockStartedAt,
-    blockDurationSeconds: firstBlock.duration,
-    remainingSeconds: remaining,
-    updatedAt: serverTimestamp()
-  });
+  isRunning: true,
+  currentBlockIndex: firstIndex,
+  blockStartedAt,
+  blockDurationSeconds: firstBlock.duration,
+  remainingSeconds: remaining
+});
 };
 
 
+export async function updateRoutineTimestamp(routineId) {
+  const routineRef = doc(db, "routines", routineId);
+  await updateDoc(routineRef, {
+    updatedAt: serverTimestamp(),
+  });
+}
 
 
 
@@ -144,10 +148,9 @@ export const startRoutine = async (routineId, uid) => {
 export const pauseRoutine = async (routineId, remainingSeconds) => {
   const routineRef = doc(db, "routines", routineId);
   await updateDoc(routineRef, {
-    isRunning: false,
-    remainingSeconds,
-    updatedAt: serverTimestamp()
-  });
+  isRunning: false,
+  remainingSeconds
+});
 };
 
 
@@ -173,12 +176,11 @@ export const advanceBlock = async (routineId) => {
 
   if (nextIndex >= blocks.length) {
     await updateDoc(routineRef, {
-      isRunning: false,
-      currentBlockIndex: null,
-      remainingSeconds: null,
-      blockDurationSeconds: null,
-      updatedAt: serverTimestamp()
-    });
+  isRunning: false,
+  currentBlockIndex: null,
+  remainingSeconds: null,
+  blockDurationSeconds: null
+});
     return;
   }
 
@@ -186,12 +188,11 @@ export const advanceBlock = async (routineId) => {
   const durationSeconds = nextBlock.duration;
 
   await updateDoc(routineRef, {
-    currentBlockIndex: nextIndex,
-    blockStartedAt: serverTimestamp(),
-    blockDurationSeconds: durationSeconds,
-    remainingSeconds: durationSeconds,
-    updatedAt: serverTimestamp()
-  });
+  currentBlockIndex: nextIndex,
+  blockStartedAt: serverTimestamp(),
+  blockDurationSeconds: durationSeconds,
+  remainingSeconds: durationSeconds
+});
 };
 
 // 🔥 RESET
@@ -199,13 +200,12 @@ export const resetRoutine = async (routineId) => {
   const routineRef = doc(db, "routines", routineId);
 
   await updateDoc(routineRef, {
-    isRunning: false,
-    currentBlockIndex: null,
-    blockStartedAt: null,
-    blockDurationSeconds: null,
-    remainingSeconds: null,
-    updatedAt: serverTimestamp()
-  });
+  isRunning: false,
+  currentBlockIndex: null,
+  blockStartedAt: null,
+  blockDurationSeconds: null,
+  remainingSeconds: null
+});
 };
 
 // 🔹 TOGGLE COMPLETED
@@ -232,7 +232,9 @@ export const updateBlock = async (routineId, blockId, updatedData) => {
 
 export const deleteBlock = async (routineId, blockId) => {
   const blockRef = doc(db, "routines", routineId, "blocks", blockId);
-  await deleteDoc(blockRef); // 🔹 ahora sí elimina correctamente
+  await deleteDoc(blockRef);
+
+  await updateRoutineTimestamp(routineId);
 };
 
 export const deleteRoutine = async (routineId) => {

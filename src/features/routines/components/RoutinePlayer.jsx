@@ -6,7 +6,7 @@ import {
   resetRoutine,
   advanceBlock,
 } from "../services/routinesService";
-import { collection, doc, getDocs, getDoc, onSnapshot, query, orderBy, updateDoc, serverTimestamp, where } from "firebase/firestore";
+import { collection, doc, getDocs, getDoc, onSnapshot, query, orderBy, updateDoc, where } from "firebase/firestore";
 import { db } from "../../../services/firebaseConfig";
 
 function getSettings() {
@@ -58,16 +58,19 @@ useEffect(() => {
       seconds = blocks[routine.currentBlockIndex]?.duration ?? 0;
     }
 
-    if (data.isRunning && data.blockStartedAt) {
-      const startedAt = data.blockStartedAt.toMillis
-        ? data.blockStartedAt.toMillis()
-        : data.blockStartedAt.toDate().getTime();
+    if (data.isRunning && data.blockStartedAt && data.remainingSeconds !== null) {
+  const startedAt = data.blockStartedAt.toMillis
+    ? data.blockStartedAt.toMillis()
+    : data.blockStartedAt.toDate().getTime();
 
-      const now = Date.now();
-      const elapsed = Math.floor((now - startedAt) / 1000);
+  const now = Date.now();
+  const elapsed = Math.floor((now - startedAt) / 1000);
 
-      seconds = Math.max(seconds - elapsed, 0);
-    }
+  // 🔹 SOLO restar si ya pasó al menos 1 segundo real
+  if (elapsed > 0) {
+    seconds = Math.max(seconds - elapsed, 0);
+  }
+}
 
     setRemaining(seconds);
     remainingRef.current = seconds;
@@ -171,11 +174,12 @@ const handleStart = async () => {
     await startRoutine(routine.id, routine.uid); // guarda blockStartedAt
   } else {
     await updateDoc(routineRef, {
-      isRunning: true,
-      blockStartedAt: serverTimestamp() // continúa desde donde quedó
-    });
+  isRunning: true,
+  blockStartedAt: new Date()
+});
   }
 };
+
 const handlePause = async () => {
   setAudioUnlocked(true);
 

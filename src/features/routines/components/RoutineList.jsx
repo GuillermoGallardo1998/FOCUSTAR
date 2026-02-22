@@ -4,17 +4,6 @@ import { useEffect, useState } from "react";
 import { listenUserRoutines, updateRoutineOrder } from "../services/routinesService";
 import RoutineCard from "./RoutineCard";
 
-import {
-  DndContext,
-  closestCenter
-} from "@dnd-kit/core";
-
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove
-} from "@dnd-kit/sortable";
-
 function RoutineCardSkeleton() {
   return (
     <div className="border p-4 rounded bg-gray-100 animate-pulse flex flex-col gap-3">
@@ -33,9 +22,12 @@ function RoutineList({ userUid, language }) {
     if (!userUid) return;
 
     const unsubscribe = listenUserRoutines(userUid, (data) => {
-      const sorted = [...data].sort(
-        (a, b) => (a.order ?? 0) - (b.order ?? 0)
-      );
+      // Ordenar por fecha (ascendente)
+      const sorted = [...data].sort((a, b) => {
+        const dateA = a.date?.seconds ? a.date.seconds * 1000 : new Date(a.date).getTime();
+        const dateB = b.date?.seconds ? b.date.seconds * 1000 : new Date(b.date).getTime();
+        return dateA - dateB;
+      });
       setRoutines(sorted);
       setLoading(false);
     });
@@ -43,17 +35,18 @@ function RoutineList({ userUid, language }) {
     return () => unsubscribe();
   }, [userUid]);
 
-  const handleDragEnd = async (event) => {
-    const { active, over } = event;
+  // FUNCION: mueve la card al inicio de la lista
+  const moveToFirst = async (id) => {
+    const oldIndex = routines.findIndex(r => r.id === id);
+    if (oldIndex <= 0) return; // ya está primero
 
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = routines.findIndex(r => r.id === active.id);
-    const newIndex = routines.findIndex(r => r.id === over.id);
-    const newOrder = arrayMove(routines, oldIndex, newIndex);
+    const newOrder = [...routines];
+    const [card] = newOrder.splice(oldIndex, 1);
+    newOrder.unshift(card);
 
     setRoutines(newOrder);
 
+    // actualizar Firebase
     for (let i = 0; i < newOrder.length; i++) {
       await updateRoutineOrder(newOrder[i].id, i);
     }
@@ -67,31 +60,19 @@ function RoutineList({ userUid, language }) {
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((n) => (
-            <RoutineCardSkeleton key={n} />
-          ))}
+          {[1, 2, 3].map(n => <RoutineCardSkeleton key={n} />)}
         </div>
       ) : (
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={routines.map(r => r.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {routines.map((routine) => (
-                <RoutineCard
-                  key={routine.id}
-                  id={routine.id}
-                  routine={routine}
-                  language={language}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {routines.map(routine => (
+            <RoutineCard
+              key={routine.id}
+              routine={routine}
+              language={language}
+              moveToFirst={moveToFirst} // botón “subir al inicio”
+            />
+          ))}
+        </div>
       )}
     </div>
   );
