@@ -6,29 +6,40 @@
 
 ---
 
-## 📌 Description
+## 🚀 Description
 
-Professional landing page for **Nahomy Tiamo**, a professional makeup artist.  
-The page showcases her services (wedding, social, artistic, full glam), experiences gallery, contact form, and booking system.  
+Focustar is an intelligent routine engine that takes the Pomodoro-style timer concept to a more structured and automated level. It allows users to execute chained work blocks automatically, save routines in the cloud, and maintain a frictionless focus flow. Designed for students and professionals who seek depth without complexity.
 
-This project was **developed almost entirely locally**, with careful hand-coding of all components, animations, and interactivity using **CSS and JavaScript**, without relying on external animation libraries. The deployed version represents **almost the exact result from local development**, ensuring high fidelity between development and production.
+## ⚖️ The Problem
 
-CSS is organized using the **BEM (Block, Element, Modifier) methodology**, ensuring a scalable and maintainable style architecture.
+Current productivity tools tend to fall into two extremes: overly simple timers that interrupt workflow, or overly complex platforms that require more planning than execution.
+Traditional timers do not allow automatic chaining of blocks, forcing users to intervene constantly and breaking the state of focus during long sessions.
+On the other hand, advanced tools often add unnecessary friction through complex configurations and heavy workflows.
 
-Developed with **React**, **Vite**, **modular CSS**, and **plain JavaScript**.  
+## ⏱ Key Features
 
-The project emphasizes **high performance**, **accessibility**, **SEO best practices**, and follows **clean code standards with ESLint**.  
-It is deployed on **Firebase Hosting** and integrates **EmailJS** for the contact form.
+⏱ Dynamic and configurable timer
+Flexible minute editing, full control over start, pause, and reset with customizable sound feedback.
+
+🔁 Automatic block execution
+Routines run continuously without manual intervention, maintaining focus flow during long sessions.
+
+☁️ Cloud-based multi-device persistence
+Routines are stored per user and synchronized across devices using Cloud Firestore.
+
+🔐 Firebase Authentication
+Email and password authentication system that separates quick mode from advanced mode.
 
 ---
 
 ## 🛠️ Technologies Used
 
-- **Frontend:** React, Vite, JavaScript (ES6+), Modular CSS (BEM methodology)  
-- **Deployment & Hosting:** Firebase Hosting  
-- **Form Integration:** EmailJS  
-- **Code Quality:** ESLint  
-- **Animations & Interactivity:** Hand-coded with CSS + JS (no external libraries)
+- **Frontend:** React, Vite, JavaScript (ES6+), Tailwind CSS, Modular Component Architecture
+- **State & Logic:** React Hooks (useState, useEffect), Zustand, Automatic Timer Chaining, Block-based Execution Engine, Hybrid Persistence (Local + Cloud)
+- **Backend & Cloud:** Firebase Authentication, Cloud Firestore, Multi-device Synchronization, EmailJS (Email Automation)  
+- **Deployment & Hosting:** Firebase Hosting
+- **Code Quality:** ESLint, Git & GitHub (Version Control) 
+- **Animations & Interactivity:** CSS, JavaScript, React Type Animation
 
 ---
 
@@ -37,25 +48,27 @@ It is deployed on **Firebase Hosting** and integrates **EmailJS** for the contac
 - Responsive Web Design  
 - Performance Optimization  
 - Accessibility (ARIA, semantic HTML)  
-- SEO Best Practices  
-- Hand-coded Animations & UI Interactions  
+- SEO Best Practices
+- Scalable Architecture
+- User Experience-Centered Design
+- Automatic Workflow Execution (Focus Routines)
+- Cloud Data Persistence & Sync
 - Contact Form Automation  
-- Local-first Development with high fidelity deployment  
-- CSS organized using **BEM** for maintainability
+  
 
 ---
 
 ## Personalized email sent directly via EmailJS
 
 <p align="center">
-  <img src="https://i.imgur.com/TkIZuYj.png" width="800" alt="Tiamo Makeup Landing Page Preview">
+  <img src="https://i.imgur.com/2DICIcu.png" width="800" alt="Tiamo Makeup Landing Page Preview">
 </p>
 
 ---
 
 ## 🚀 Live Demo
 
-🔗 [View Live Page](https://tiamo-makeup.web.app)
+🔗 [View Live Page](focustar.guillermogallardopino.tech)
 
 ---
 
@@ -64,7 +77,7 @@ It is deployed on **Firebase Hosting** and integrates **EmailJS** for the contac
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/GuillermoGallardo1998/TIAMO-MAKEUP.git
-cd TIAMO-MAKEUP
+git clone https://github.com/GuillermoGallardo1998/FOCUSTAR.git
+cd FOCUSTAR-Guillermo-Gallardo
 npm install
 npm run dev
