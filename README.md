@@ -68,7 +68,7 @@ Email and password authentication system that separates quick mode from advanced
 
 ## 🚀 Live Demo
 
-🔗 [View Live Page](focustar.guillermogallardopino.tech/)
+🔗 [View Live Page](https://focustar.guillermogallardopino.tech/)
 
 ---
 
