@@ -38,8 +38,8 @@ Email and password authentication system that separates quick mode from advanced
 - **State & Logic:** React Hooks (useState, useEffect), Zustand, Automatic Timer Chaining, Block-based Execution Engine, Hybrid Persistence (Local + Cloud)
 - **Backend & Cloud:** Firebase Authentication, Cloud Firestore, Multi-device Synchronization, EmailJS (Email Automation)  
 - **Deployment & Hosting:** Firebase Hosting
-- **Code Quality:** ESLint, Git & GitHub (Version Control) 
-- **Animations & Interactivity:** CSS, JavaScript, React Type Animation
+- **Code Quality:** ESLint, Git & GitHub
+- **Animations & Interactivity:** CSS Animations, React Type Animation
 
 ---
 
