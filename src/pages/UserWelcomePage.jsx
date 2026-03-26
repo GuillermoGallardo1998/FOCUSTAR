@@ -1,4 +1,4 @@
-// UserWelcomePage.jsx
+// pages/UserWelcomePage.jsx
 
 import { useOutletContext } from "react-router-dom";
 import { TypeAnimation } from "react-type-animation";
@@ -7,7 +7,7 @@ function UserWelcomePage() {
   const { language } = useOutletContext();
 
   return (
-    <div className="min-h-screen pt-20 px-10 pb-6 flex flex-col items-center justify-center text-center">
+    <div className="min-h-dvh pt-20 px-10 pb-6 flex flex-col items-center justify-center text-center">
       <h1 className="text-5xl font-bold text-(--text-color) mb-15 text-shadow-(--text-shadow-strong)">
         <TypeAnimation
           key={language}

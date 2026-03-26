@@ -1,4 +1,4 @@
-// LoginSidebar.jsx
+// components/LoginSidebar.jsx
 
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,8 +19,6 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 export default function LoginSidebar({ isOpen, onClose, language }) {
   const navigate = useNavigate();
   const isES = language === "es";
-
-  // 🔹 Estados
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -28,16 +26,13 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
   const [lastName, setLastName] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirmEmail, setConfirmEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-
-  // 🔹 Refs para inputs
   const formRef = useRef();
 
-  // 🔹 Textos traducibles centralizados
   const t = {
     login: isES ? "Iniciar sesión" : "Sign In",
     register: isES ? "Registrarse" : "Register",
@@ -81,14 +76,12 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
 
   };
 
-  // 🔹 Validaciones
   const isValidUsername = (username) => /^[a-zA-Z0-9_]{3,20}$/.test(username);
   const isValidPassword = (password) =>
     /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
   const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // 🔹 Traducción de errores Firebase
   const getAuthErrorMessage = (code) => {
     const errors = {
       "auth/invalid-credential": t.invalidCredentials,
@@ -101,7 +94,6 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
     return errors[code] || t.genericError;
   };
 
-  // 🔹 Limpiar error al escribir en cualquier input del sidebar
   useEffect(() => {
     const form = formRef.current;
     if (!form) return;
@@ -110,7 +102,6 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
     return () => form.removeEventListener("input", handleInput);
   }, []);
 
-  // 🔹 Google login
   const handleGoogleLogin = async () => {
     if (loading) return;
     setLoading(true);
@@ -126,7 +117,6 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
     }
   };
 
-  // 🔹 Email login
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -154,7 +144,6 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
     }
   };
 
-  // 🔹 Reservar username único
   const reserveUsername = async (username) => {
     const ref = doc(db, "takenUsernames", username);
     const snap = await getDoc(ref);
@@ -163,7 +152,6 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
     return true;
   };
 
-  // 🔹 Registro
   const handleRegister = async () => {
     if (loading) return;
 
@@ -197,16 +185,13 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
       return;
     }
 
-
     setLoading(true);
     setError("");
 
     try {
-      // Crear usuario
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userCred.user.uid;
 
-      // Reservar username
       const reserved = await reserveUsername(username);
       if (!reserved) {
         setError(t.usernameTaken);
@@ -215,10 +200,8 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
         return;
       }
 
-      // Actualizar displayName
       await updateProfile(userCred.user, { displayName: username });
 
-      // Crear documento en Firestore
       await setDoc(doc(db, "users", uid), {
         uid,
         username,
@@ -242,7 +225,7 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
   };
 
   const handleForgotPassword = async () => {
-    setError(""); // limpiar errores previos
+    setError("");
 
     if (!email) {
       setError(isES ? "Ingresa tu correo para recuperar la contraseña" : "Enter your email to reset password");
@@ -256,7 +239,6 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
       setError(isES ? "Correo de recuperación enviado" : "Password reset email sent");
     } catch (err) {
       console.error(err);
-      // Mapeo de errores comunes de Firebase
       if (err.code === "auth/user-not-found") {
         setError(isES ? "Usuario no encontrado" : "User not found");
       } else if (err.code === "auth/invalid-email") {
@@ -269,57 +251,54 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
     }
   };
 
-
-  // 🔹 Early return si el sidebar no está abierto
   if (!isOpen) return null;
 
   return (
     <div
-      ref={formRef}
-      className="fixed top-0 right-0 w-1/4 min-w-100 h-full flex flex-col justify-baseline items-center bg-(--bg-color) text-(--text-color) shadow-2xl p-8 pt-30 z-60 overflow-y-auto border-l border-(--text-color)/10"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
     >
-      <h2 className="text-xl text-center font-semibold mb-4">
-        {isRegistering ? t.register : t.login}
-      </h2>
-
-      {error && (
-        <p className="w-full text-center text-white mb-3 text-sm bg-red-800 p-4 rounded shadow-2xl">
-          {error}
-        </p>
-      )}
-
-      {/* Toggle Login/Register */}
-      <div className="flex justify-between mb-4">
-        <button
-          onClick={() => setIsRegistering(false)}
-          className={`px-3 py-1 rounded text-sm ${
-            !isRegistering ? "bg-blue-600" : "bg-white/10 hover:bg-white/20"
-          }`}
-        >
-          {t.login}
-        </button>
-        <button
-          onClick={() => setIsRegistering(true)}
-          className={`px-3 py-1 rounded text-sm ${
-            isRegistering ? "bg-blue-600" : "bg-white/10 hover:bg-white/20"
-          }`}
-        >
-          {t.register}
-        </button>
-      </div>
-
-      {/* Formulario */}
-      {!isRegistering ? (
-        <form
+      <div
+        ref={formRef}
+        onClick={(e) => e.stopPropagation()}
+        className="
+          fixed top-0 right-0 h-full flex flex-col justify-start items-center bg-(--bg-color) text-(--text-color) shadow-2xl p-8 pt-20 overflow-y-auto border-l border-(--text-color)/10 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4"
+      >
+        <h2 className="text-2xl text-center font-bold mb-6 text-shadow-(--text-shadow-strong)">
+          {isRegistering ? t.register : t.login}
+        </h2>
+        {error && (
+          <p className="w-full text-center text-(--text-color) mb-6 bg-(--bg-color) p-4 rounded-2xl [box-shadow:var(--component-shadow-soft)] text-shadow-(--text-shadow-strong) border border-(--text-color)/50">
+            {error}
+          </p>
+        )}
+        <div className="flex items-center justify-between gap-4 mb-6 w-full">
+          <button
+            onClick={() => setIsRegistering(false)}
+            className={`flex-1 p-2 rounded-xl text font-semibold text-shadow-(--text-shadow-strong) cursor-pointer [box-shadow:var(--component-shadow)] ${!isRegistering ? "bg-(--text-color) text-(--bg-color) " : "bg-(--text-color)/10 hover:bg-white/20"
+              }`}
+          >
+            {t.login}
+          </button>
+          <button
+            onClick={() => setIsRegistering(true)}
+            className={`flex-1 p-2 rounded-xl text font-semibold text-shadow-(--text-shadow-strong) cursor-pointer [box-shadow:var(--component-shadow)] ${isRegistering ? "bg-(--text-color) text-(--bg-color) " : "bg-(--text-color)/10 hover:bg-white/20"
+              }`}
+          >
+            {t.register}
+          </button>
+        </div>
+        {!isRegistering ? (
+          <form
             onSubmit={handleEmailLogin}
-            className="flex flex-col gap-3 mb-4 text-(--text-color)"
+            className="flex flex-col gap-3 mb-4 text-(--text-color) w-full"
           >
             <input
               type="email"
               placeholder={t.email}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="px-3 py-2 rounded bg-(--bg-color) border border-white/20 focus:outline-none text-(--text-color)"
+              className="px-3 py-2 rounded-xl bg-(--text-color)/10 border border-(--text-color)/20 focus:outline-none text-(--text-color) [box-shadow:var(--component-shadow-soft)]"
             />
             <div className="relative">
               <input
@@ -327,131 +306,140 @@ export default function LoginSidebar({ isOpen, onClose, language }) {
                 placeholder={t.password}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="px-3 py-2 rounded bg-(--bg-color) border border-white/20 w-full focus:outline-none text-(--text-color)"
+                className="w-full px-3 py-2 rounded-xl bg-(--text-color)/10 border border-(--text-color)/20 focus:outline-none text-(--text-color) [box-shadow:var(--component-shadow-soft)]"
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-(--text-color)"
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? "🙈" : "👁️"}
+                <img
+                  src={showPassword ? "/icons/Padlock-open.png" : "/icons/Padlock-close.png"}
+                  alt={showPassword ? "Mostrar contraseña" : "Ocultar contraseña"}
+                  className="w-5 h-5"
+                />
               </button>
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 text-(--text-color)"
+              className="px-4 py-2 font-bold bg-(--text-color) rounded-xl text-(--bg-color) hover:bg-(--bg-color) hover:text-(--text-color) border border-(--text-color)/50 disabled:opacity-50 cursor-pointer [box-shadow:var(--component-shadow-soft)]"
             >
               {loading ? t.loading : t.login}
             </button>
-            {/* Botón "Olvidé mi contraseña" */}
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="mt-2 text-sm text-(--text-color) hover:underline self-start"
+              className="w-full mt-3 text-sm text-center text-(--text-color) hover:underline self-start cursor-pointer"
             >
               {isES ? "Olvidé mi contraseña" : "Forgot Password"}
             </button>
           </form>
-      ) : (
-        <div className="flex flex-col gap-3 mb-4">
-          <input
-            type="text"
-            placeholder={t.username}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="px-3 py-2 rounded bg-white/10 border border-white/20"
-          />
-          <input
-            type="text"
-            placeholder={t.firstName}
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            className="px-3 py-2 rounded bg-white/10 border border-white/20"
-          />
-          <input
-            type="text"
-            placeholder={t.lastName}
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            className="px-3 py-2 rounded bg-white/10 border border-white/20"
-          />
-          <input
-            type="email"
-            placeholder={t.email}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="px-3 py-2 rounded bg-white/10 border border-white/20"
-          />
-          <input
-            type="email"
-            placeholder={t.confirmEmailText}
-            value={confirmEmail}
-            onChange={(e) => setConfirmEmail(e.target.value)}
-            className="px-3 py-2 rounded bg-white/10 border border-white/20"
-          />
-          <div className="relative">
+        ) : (
+          <div className="w-full flex flex-col gap-3 mb-4">
             <input
-              type={showPassword ? "text" : "password"}
-              placeholder={t.password}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="px-3 py-2 rounded bg-white/10 border border-white/20 w-full"
+              type="text"
+              placeholder={t.username}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-(--text-color)/10 border border-(--text-color)/20 focus:outline-none text-(--text-color) [box-shadow:var(--component-shadow-soft)]"
             />
+            <input
+              type="text"
+              placeholder={t.firstName}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-(--text-color)/10 border border-(--text-color)/20 focus:outline-none text-(--text-color) [box-shadow:var(--component-shadow-soft)]"
+            />
+            <input
+              type="text"
+              placeholder={t.lastName}
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-(--text-color)/10 border border-(--text-color)/20 focus:outline-none text-(--text-color) [box-shadow:var(--component-shadow-soft)]"
+            />
+            <input
+              type="email"
+              placeholder={t.email}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-(--text-color)/10 border border-(--text-color)/20 focus:outline-none text-(--text-color) [box-shadow:var(--component-shadow-soft)]"
+            />
+            <input
+              type="email"
+              placeholder={t.confirmEmailText}
+              value={confirmEmail}
+              onChange={(e) => setConfirmEmail(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-(--text-color)/10 border border-(--text-color)/20 focus:outline-none text-(--text-color) [box-shadow:var(--component-shadow-soft)]"
+            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder={t.password}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-(--text-color)/10 border border-(--text-color)/20 focus:outline-none text-(--text-color) [box-shadow:var(--component-shadow-soft)]"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <img
+                  src={showPassword ? "/icons/Padlock-open.png" : "/icons/Padlock-close.png"}
+                  alt={showPassword ? "Mostrar contraseña" : "Ocultar contraseña"}
+                  className="w-5 h-5"
+                />
+              </button>
+            </div>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder={t.confirmPasswordText}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-(--text-color)/10 border border-(--text-color)/20 focus:outline-none text-(--text-color) [box-shadow:var(--component-shadow-soft)]"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                <img
+                  src={showConfirmPassword ? "/icons/Padlock-open.png" : "/icons/Padlock-close.png"}
+                  alt={showConfirmPassword ? "Mostrar contraseña" : "Ocultar contraseña"}
+                  className="w-5 h-5"
+                />
+              </button>
+            </div>
             <button
-              type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={handleRegister}
+              disabled={loading}
+              className="px-4 py-2 font-bold bg-(--text-color) rounded-xl text-(--bg-color) hover:bg-(--bg-color) hover:text-(--text-color) border border-(--text-color)/50 disabled:opacity-50 cursor-pointer [box-shadow:var(--component-shadow-soft)]"
             >
-              {showPassword ? "🙈" : "👁️"}
+              {loading ? t.processing : t.register}
             </button>
           </div>
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder={t.confirmPasswordText}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="px-3 py-2 rounded bg-white/10 border border-white/20 w-full"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </button>
-          </div>
-          <button
-            onClick={handleRegister}
-            disabled={loading}
-            className="px-4 py-2 bg-green-600 rounded hover:bg-green-700 disabled:opacity-50"
-          >
-            {loading ? t.processing : t.register}
-          </button>
+        )}
+        <div className="w-full flex items-center gap-2 mb-4">
+          <hr className="flex-1 border-(--text-color)/20" />
+          <span className="text-(--text-color) text-shadow-(--text-shadow-strong)">or</span>
+          <hr className="flex-1 border-(--text-color)/20" />
         </div>
-      )}
-
-      <div className="flex items-center gap-2 mb-4">
-        <hr className="flex-1 border-white/20" />
-        <span className="text-xs opacity-60">or</span>
-        <hr className="flex-1 border-white/20" />
+        <button
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full px-4 py-2 font-bold bg-red-700 text-(--smoke-white) rounded-xl hover:bg-red-800 disabled:opacity-50"
+        >
+          {loading ? t.loading : t.google}
+        </button>
+        <button
+          onClick={onClose}
+          className="mt-4 w-full px-4 py-2 border border-white/20 rounded hover:bg-white/10"
+        >
+          {t.close}
+        </button>
       </div>
-
-      <button
-        onClick={handleGoogleLogin}
-        disabled={loading}
-        className="w-full px-4 py-2 bg-red-600 rounded hover:bg-red-700 disabled:opacity-50"
-      >
-        {loading ? t.loading : t.google}
-      </button>
-
-      <button
-        onClick={onClose}
-        className="mt-4 w-full px-4 py-2 border border-white/20 rounded hover:bg-white/10"
-      >
-        {t.close}
-      </button>
     </div>
   );
 }

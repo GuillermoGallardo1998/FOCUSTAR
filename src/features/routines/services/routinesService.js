@@ -1,5 +1,4 @@
-// routinesService.js
-// routinesService.js
+// services/routinesService.js
 
 import { db } from "../../../services/firebaseConfig";
 import {
@@ -17,11 +16,19 @@ import {
 } from "firebase/firestore";
 import { deleteDoc } from "firebase/firestore";
 
-// 🔹 Crear rutina
+// CREATE ROUTINE
 export const createRoutine = async (uid, name) => {
-  const docRef = await addDoc(collection(db, "routines"), {
+  const routinesRef = collection(db, "routines");
+  const q = query(
+    routinesRef,
+    where("uid", "==", uid)
+  );
+  const snapshot = await getDocs(q);
+  const maxOrder = snapshot.docs.length > 0 ? Math.max(...snapshot.docs.map(doc => doc.data().order ?? 0)) : -1;
+  const docRef = await addDoc(routinesRef, {
     uid,
     name,
+    order: maxOrder + 1,
     isRunning: false,
     currentBlockIndex: null,
     blockStartedAt: null,
@@ -30,26 +37,35 @@ export const createRoutine = async (uid, name) => {
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   });
+
   return docRef.id;
 };
 
-// 🔹 Escuchar rutinas en tiempo real
+// LISTEN TO ROUTINES IN REAL TIME
 export const listenUserRoutines = (uid, callback) => {
-  const q = query(collection(db, "routines"), where("uid", "==", uid));
+  const q = query(
+    collection(db, "routines"),
+    where("uid", "==", uid),
+    orderBy("order", "asc")
+  );
+
   return onSnapshot(q, (snapshot) => {
-    const routines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const routines = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
     callback(routines);
   });
 };
 
-// 🔹 Crear bloque
+// CREATE BLOCK
 export const createBlock = async (routineId, blockData) => {
   const blocksRef = collection(db, "routines", routineId, "blocks");
   const docRef = await addDoc(blocksRef, { ...blockData, completed: false });
   return docRef.id;
 };
 
-// 🔹 Obtener bloques
+// GET BLOCKS
 export const getRoutineBlocks = async (routineId) => {
   const q = query(
     collection(db, "routines", routineId, "blocks"),
@@ -59,19 +75,7 @@ export const getRoutineBlocks = async (routineId) => {
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-// 🔹 Poner en pausa todas las demás rutinas activas del usuario
+// PAUSE ALL OTHER ACTIVE USER ROUTINES
 export const pauseOtherUserRoutines = async (uid, currentRoutineId) => {
   const q = query(
     collection(db, "routines"),
@@ -79,19 +83,17 @@ export const pauseOtherUserRoutines = async (uid, currentRoutineId) => {
     where("isRunning", "==", true)
   );
   const snapshot = await getDocs(q);
-
   const updates = snapshot.docs
-    .filter(docSnap => docSnap.id !== currentRoutineId) // ignorar la que vas a iniciar
+    .filter(docSnap => docSnap.id !== currentRoutineId)
     .map(docSnap =>
       updateDoc(docSnap.ref, {
-  isRunning: false
-})
+        isRunning: false
+      })
     );
-
   await Promise.all(updates);
 };
 
-// 🔹 INICIAR RUTINA
+// START ROUTINE
 export const startRoutine = async (routineId, uid) => {
   if (!routineId || !uid) return;
 
@@ -100,12 +102,10 @@ export const startRoutine = async (routineId, uid) => {
   if (!routineSnap.exists()) return;
   const routineData = routineSnap.data();
 
-  // 🔹 Solo pausar otras rutinas si esta no estaba corriendo
   if (!routineData.isRunning) {
     await pauseOtherUserRoutines(uid, routineId);
   }
 
-  // 🔹 Si ya estaba corriendo, no hacemos nada
   if (routineData.isRunning) return;
 
   const blocksSnapshot = await getDocs(
@@ -120,20 +120,19 @@ export const startRoutine = async (routineId, uid) => {
 
   const firstBlock = blocks[firstIndex];
 
-  // 🔹 Usar remaining guardado si estaba pausada
   const remaining = routineData.remainingSeconds > 0 ? routineData.remainingSeconds : firstBlock.duration;
   const blockStartedAt = routineData.blockStartedAt || serverTimestamp();
 
   await updateDoc(routineRef, {
-  isRunning: true,
-  currentBlockIndex: firstIndex,
-  blockStartedAt,
-  blockDurationSeconds: firstBlock.duration,
-  remainingSeconds: remaining
-});
+    isRunning: true,
+    currentBlockIndex: firstIndex,
+    blockStartedAt,
+    blockDurationSeconds: firstBlock.duration,
+    remainingSeconds: remaining
+  });
 };
 
-
+// UPDATE ROUTINE
 export async function updateRoutineTimestamp(routineId) {
   const routineRef = doc(db, "routines", routineId);
   await updateDoc(routineRef, {
@@ -141,10 +140,7 @@ export async function updateRoutineTimestamp(routineId) {
   });
 }
 
-
-
-
-// 🔥 PAUSAR RUTINA
+// PAUSE ROUTINE
 export const pauseRoutine = async (routineId, remainingSeconds) => {
   const routineRef = doc(db, "routines", routineId);
   await updateDoc(routineRef, {
@@ -153,11 +149,7 @@ export const pauseRoutine = async (routineId, remainingSeconds) => {
 });
 };
 
-
-
-
-
-// 🔥 AVANZAR BLOQUE
+// ADVANCE BLOCK
 export const advanceBlock = async (routineId) => {
   const routineRef = doc(db, "routines", routineId);
   const routineSnap = await getDoc(routineRef);
@@ -176,11 +168,11 @@ export const advanceBlock = async (routineId) => {
 
   if (nextIndex >= blocks.length) {
     await updateDoc(routineRef, {
-  isRunning: false,
-  currentBlockIndex: null,
-  remainingSeconds: null,
-  blockDurationSeconds: null
-});
+      isRunning: false,
+      currentBlockIndex: null,
+      remainingSeconds: null,
+      blockDurationSeconds: null
+    });
     return;
   }
 
@@ -188,27 +180,27 @@ export const advanceBlock = async (routineId) => {
   const durationSeconds = nextBlock.duration;
 
   await updateDoc(routineRef, {
-  currentBlockIndex: nextIndex,
-  blockStartedAt: serverTimestamp(),
-  blockDurationSeconds: durationSeconds,
-  remainingSeconds: durationSeconds
-});
+    currentBlockIndex: nextIndex,
+    blockStartedAt: serverTimestamp(),
+    blockDurationSeconds: durationSeconds,
+    remainingSeconds: durationSeconds
+  });
 };
 
-// 🔥 RESET
+// RESET
 export const resetRoutine = async (routineId) => {
   const routineRef = doc(db, "routines", routineId);
 
   await updateDoc(routineRef, {
-  isRunning: false,
-  currentBlockIndex: null,
-  blockStartedAt: null,
-  blockDurationSeconds: null,
-  remainingSeconds: null
-});
+    isRunning: false,
+    currentBlockIndex: null,
+    blockStartedAt: null,
+    blockDurationSeconds: null,
+    remainingSeconds: null
+  });
 };
 
-// 🔹 TOGGLE COMPLETED
+// TOGGLE COMPLETED
 export const toggleBlockCompleted = async (routineId, blockId, completed) => {
   const blockRef = doc(db, "routines", routineId, "blocks", blockId);
   await updateDoc(blockRef, {
@@ -218,7 +210,7 @@ export const toggleBlockCompleted = async (routineId, blockId, completed) => {
 };
 
 
-// 🔹 Actualizar bloque existente
+// UPDATE EXISTING BLOCK
 export const updateBlock = async (routineId, blockId, updatedData) => {
   const blockRef = doc(db, "routines", routineId, "blocks", blockId);
   await updateDoc(blockRef, {
@@ -227,9 +219,7 @@ export const updateBlock = async (routineId, blockId, updatedData) => {
   });
 };
 
-// 🔹 Eliminar bloque
- // <- asegúrate de importarlo arriba
-
+// DELETE BLOCK
 export const deleteBlock = async (routineId, blockId) => {
   const blockRef = doc(db, "routines", routineId, "blocks", blockId);
   await deleteDoc(blockRef);
@@ -237,22 +227,20 @@ export const deleteBlock = async (routineId, blockId) => {
   await updateRoutineTimestamp(routineId);
 };
 
+// DELETE ROUTINE
 export const deleteRoutine = async (routineId) => {
   const routineRef = doc(db, "routines", routineId);
 
-  // 🔹 Primero eliminamos todos los bloques de la rutina
   const blocksSnapshot = await getDocs(
     collection(db, "routines", routineId, "blocks")
   );
   const deletes = blocksSnapshot.docs.map(d => deleteDoc(d.ref));
   await Promise.all(deletes);
 
-  // 🔹 Luego eliminamos la rutina
   await deleteDoc(routineRef);
 };
 
-
-// Función para actualizar el orden en Firebase
+// FUNCTION TO UPDATE ORDER IN FIREBASE
 export const updateRoutineOrder = async (routineId, newOrder) => {
   const routineRef = doc(db, "routines", routineId);
   await updateDoc(routineRef, { order: newOrder });

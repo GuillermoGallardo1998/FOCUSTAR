@@ -1,4 +1,4 @@
-// UserFloatingMenu.jsx
+// components/UserFloatingMenu.jsx
 
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -31,15 +31,15 @@ function UserFloatingMenu({ language }) {
               onClick={() => goTo("data")}
               className="w-40 bg-(--bg-color) text-(--text-color) border border-(--text-color)/50 py-2 rounded-full transition-all duration-300 ease-in-out text-shadow-(--text-shadow-strong) hover:bg-(--text-color) hover:text-(--bg-color)"
             >
-              {language === "es" ? "Rutinas" : "Routines"}
+              {language === "es" ? "Mis Rutinas" : "My Routines"}
             </button>
           </div>
           <div className="slide-in delay-3">
             <button
-              onClick={() => goTo("metrics")}
+              onClick={() => goTo("tasks")}
               className="w-40 bg-(--bg-color) text-(--text-color) border border-(--text-color)/50 py-2 rounded-full transition-all duration-300 ease-in-out text-shadow-(--text-shadow-strong) hover:bg-(--text-color) hover:text-(--bg-color)"
             >
-              {language === "es" ? "Métricas" : "Metrics"}
+              {language === "es" ? "Mis Listas" : "My Tasks"}
             </button>
           </div>
           <div className="slide-in delay-4">
@@ -52,7 +52,6 @@ function UserFloatingMenu({ language }) {
           </div>
         </>
       )}
-
       <button
         onClick={() => setOpen(!open)}
         className={`

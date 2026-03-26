@@ -1,4 +1,4 @@
-// SettingsModal.jsx
+// components/SettingsModal.jsx
 import { useEffect, useRef, useState } from "react"
 
 function getSavedSettings() {
@@ -56,20 +56,17 @@ export default function SettingsModal({ isOpen, onClose, language }) {
       onClick={onClose}
     >
       <div
-        className="w-[90%] max-w-md p-6 rounded-2xl space-y-6 shadow-2xl border border-white/10 backdrop-blur-md transition-all duration-300 hover:scale-[1.02]"
+        className="w-[90%] max-w-md p-6 rounded-2xl space-y-6 shadow-2xl border border-white/10 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] max-h-[90vh] overflow-y-auto"
         style={{ backgroundColor: "var(--bg-color)", color: "var(--text-color)" }}
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-bold tracking-wide text-center mb-4">
           {language === "es" ? "Configuraciones" : "Settings"}
         </h2>
-
-        {/* CUSTOM DROPDOWN */}
         <div className="flex flex-col gap-2">
           <label className="block text-sm font-medium">
             {language === "es" ? "Sonido de alarma" : "Alarm sound"}
           </label>
-
           <div className="relative w-full">
             <button
               className="w-full p-2 rounded-lg flex justify-between items-center border border-white/20 focus:outline-none transition hover:opacity-80"
@@ -85,7 +82,6 @@ export default function SettingsModal({ isOpen, onClose, language }) {
                 ▼
               </span>
             </button>
-
             {dropdownOpen && (
               <ul
                 className="absolute top-full left-0 mt-1 z-50 w-full rounded-lg max-h-52 overflow-auto shadow-lg border border-white/20"
@@ -94,9 +90,8 @@ export default function SettingsModal({ isOpen, onClose, language }) {
                 {sounds.map((s) => (
                   <li
                     key={s.value}
-                    className={`p-2 cursor-pointer hover:opacity-80 ${
-                      sound === s.value ? "font-semibold" : ""
-                    }`}
+                    className={`p-2 cursor-pointer hover:opacity-80 ${sound === s.value ? "font-semibold" : ""
+                      }`}
                     onClick={() => {
                       setSound(s.value)
                       setDropdownOpen(false)
@@ -112,7 +107,6 @@ export default function SettingsModal({ isOpen, onClose, language }) {
               </ul>
             )}
           </div>
-
           <button
             onClick={playPreview}
             className="mt-2 px-4 py-2 rounded-lg font-medium text-sm transition hover:opacity-80"
@@ -121,8 +115,6 @@ export default function SettingsModal({ isOpen, onClose, language }) {
             {language === "es" ? "Reproducir" : "Preview"}
           </button>
         </div>
-
-        {/* VOLUMEN */}
         <div className="flex flex-col gap-2">
           <label className="block text-sm font-medium">
             {language === "es" ? `Volumen: ${volume}%` : `Volume: ${volume}%`}
@@ -136,18 +128,13 @@ export default function SettingsModal({ isOpen, onClose, language }) {
             className="w-full accent-blue-500 cursor-pointer"
           />
         </div>
-
-        {/* REPETIR */}
         <div className="flex justify-center items-center gap-2">
           <input type="checkbox" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} className="accent-blue-500" />
           <span className="text-sm font-medium">
             {language === "es" ? "Repetir alarma hasta detener" : "Repeat alarm until stopped"}
           </span>
         </div>
-
-        {/* COLORES + BOTÓN DEFAULT */}
         <div className="flex flex-wrap justify-center items-center gap-6 mt-4">
-          {/* Background color */}
           <div className="flex flex-col items-center relative">
             <label className="text-sm font-medium mb-1">
               {language === "es" ? "Fondo" : "Background"}
@@ -159,8 +146,6 @@ export default function SettingsModal({ isOpen, onClose, language }) {
               onClick={(e) => e.currentTarget.previousSibling.click()}
             />
           </div>
-
-          {/* Text color */}
           <div className="flex flex-col items-center relative">
             <label className="text-sm font-medium mb-1">
               {language === "es" ? "Texto" : "Text"}
@@ -172,8 +157,6 @@ export default function SettingsModal({ isOpen, onClose, language }) {
               onClick={(e) => e.currentTarget.previousSibling.click()}
             />
           </div>
-
-          {/* Default Colors Button */}
           <button
             onClick={() => {
               setBgColor("#0a0a0a")
@@ -185,8 +168,6 @@ export default function SettingsModal({ isOpen, onClose, language }) {
             {language === "es" ? "Colores por defecto" : "Default Colors"}
           </button>
         </div>
-
-        {/* Close button */}
         <button
           onClick={onClose}
           className="w-full py-2 rounded-lg font-semibold text-sm transition hover:bg-white/20 mt-4"

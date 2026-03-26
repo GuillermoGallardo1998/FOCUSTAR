@@ -1,3 +1,5 @@
+// components/ProtectedRoute.jsx
+
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { auth } from "../services/firebaseConfig";
@@ -16,7 +18,6 @@ export default function ProtectedRoute({ children, uidParam }) {
 
   if (loading) return <p>Cargando...</p>;
 
-  // 🔹 Si no hay usuario logueado o UID no coincide, redirigir al home
   if (!user || user.uid !== uidParam) {
     return <Navigate to="/" replace />;
   }

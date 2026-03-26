@@ -1,4 +1,4 @@
-// UserLayout.jsx
+// pages/UserLayout.jsx
 
 import { useState } from "react";
 import { Outlet } from "react-router-dom";

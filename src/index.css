@@ -2,51 +2,132 @@
 
 @import "tailwindcss";
 
-/* Variables globales */
+/* GLOBAL VARIABLES */
 :root {
   --bg-color: #121212;
   --text-color: #EDEDED;
   --smoke-white: #d4d4d4;
+
+  --input-text: #121212;
+  --input-color: #EDEDED;
 
   --text-shadow-strong: 2px 2px 8px rgba(0, 0, 0, 0.5);
   --component-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
   --component-shadow-soft: 0 0 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Aplicación GLOBAL */
+.text-shadow { text-shadow: var(--text-shadow-strong); }
+.component-shadow { box-shadow: var(--component-shadow); }
+.component-shadow-soft { box-shadow: var(--component-shadow-soft); }
+
+/* GLOBAL APPLICATION */
 html, body, #root {
   background-color: var(--bg-color);
   color: var(--text-color);
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
   min-height: 100%;
   transition: background-color 0.3s ease, color 0.3s ease;
-
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  letter-spacing: 0.2px; /* más elegante */
+  letter-spacing: 0.2px;
+  scroll-behavior: smooth;
 }
 
-/* 💓 Palpitación del número */
-@keyframes pulseTimer {
-  0%   { transform: scale(1); opacity: 1; }
-  50%  { transform: scale(1.1); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
+/* LOGO PULSATION */
+@keyframes pulseGlow {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.logo-pulse { animation: pulseGlow 2s infinite ease-in-out; }
+
+/* BUTTON HOVER EFFECT */
+.btn-glow {
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 1px solid color-mix(in srgb, var(--text-color) 25%, transparent);
+}
+.btn-glow:hover {
+  transform: translateY(-2px);
+  background-color: var(--text-color);
+  color: var(--bg-color);
 }
 
-.timer-finished {
-  animation: pulseTimer 1s infinite;
+/* ⚙ ROTATING ICON */
+.btn-glow:hover .icon-spin {
+  animation: spin 1s linear infinite;
+  color: var(--bg-color);
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* 🚨 Fondo rojo intermitente */
+/* ANIMATION OF THE RED HEADER LINE */
+@keyframes slideGlow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.header-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.header-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.header-line::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 40%,  
+    red 45%,          
+    red 55%,         
+    transparent 60%,
+    transparent 100%
+  );
+  animation: slideGlow 4s linear infinite;
+}
+
+/* FLASHING RED BACKGROUND */
 @keyframes bgFlash {
   0%   { background-color: #1a0000; }
   50%  { background-color: #3a0000; }
   100% { background-color: #1a0000; }
 }
+.bg-flash { animation: bgFlash 1s infinite; }
 
-.bg-flash {
-  animation: bgFlash 1s infinite;
+/* NOT FOUND PAGE 404 */
+@keyframes strong-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
 }
+.animate-strong-pulse { animation: strong-pulse 2s ease-in-out infinite; }
 
-/* 🍞 Toast */
+/* TOAST */
 .toast {
   position: fixed;
   bottom: 30px;
@@ -61,161 +142,46 @@ html, body, #root {
   animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s;
   z-index: 9999;
 }
-
 @keyframes toastIn {
   from { opacity: 0; transform: translate(-50%, 20px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
 }
-
 @keyframes toastOut {
   from { opacity: 1; transform: translate(-50%, 0); }
   to   { opacity: 0; transform: translate(-50%, 20px); }
 }
 
-/* ===============================
-   🔴 LOGO PALPITANDO (LATIDO)
-=================================*/
-@keyframes pulseGlow {
-  0% {
-    transform: scale(1); /* tamaño normal */
-  }
-  50% {
-    transform: scale(1.1); /* crece un poco */
-  }
-  100% {
-    transform: scale(1); /* vuelve a tamaño normal */
-  }
-}
-
-.logo-pulse {
-  animation: pulseGlow 2s infinite ease-in-out;
-}
-
-/* ===============================
-   ✨ EFECTO HOVER EN BOTONES
-=================================*/
-.btn-glow {
-  cursor: pointer;
-  transition: all 0.25s ease;
-  border: 1px solid color-mix(in srgb, var(--text-color) 25%, transparent);
-}
-
-/* Hover dinámico según el tema */
-.btn-glow:hover {
-  transform: translateY(-2px);
-
-  /* Fondo mezcla texto + fondo */
-  background-color: var(--text-color);
-
-  /* Texto más intenso */
-  color: var(--bg-color);
-
-
-
-}
-
-
-
-/* ===============================
-   ⚙ ÍCONO GIRATORIO
-=================================*/
-.btn-glow:hover .icon-spin {
-  animation: spin 1s linear infinite;
-  color: var(--bg-color);
-}
-
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* ===============================
-   🔥 LÍNEA ROJA ANIMADA ABAJO
-=================================*/
-@keyframes slideGlow {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.header-line {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  width: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.header-line {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  width: 100%;      /* cubre toda la pantalla */
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.header-line::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -50%;
-  width: 100%;
-  height: 100%;
-
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    transparent 40%,  /* empieza rojo */
-    red 45%,          /* rojo inicio central */
-    red 55%,          /* rojo fin central */
-    transparent 60%,  /* termina rojo */
-    transparent 100%
-  );
-
-  animation: slideGlow 4s linear infinite;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Animación de entrada desde la derecha */
+/* USER MENU ANIMATION */
 .slide-in {
   opacity: 0;
   transform: translateX(30px);
   animation: slideIn 0.3s ease-out forwards;
 }
-
 @keyframes slideIn {
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
-
-/* delays escalonados */
 .delay-1 { animation-delay: 0.4s; }
 .delay-2 { animation-delay: 0.3s; }
 .delay-3 { animation-delay: 0.2s; }
 .delay-4 { animation-delay: 0.1s; }
 
-
-
-
-/* 🔥 Animación vibración cuando tarea se completa */
-
+/* TASK LIST DELETE MODAL ENTRY ANIMATION */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-scaleIn { animation: scaleIn 0.2s ease-out; }
+ 
+/* COMPLETED TASK ANIMATION */
 @keyframes vibrateTask {
   0% { transform: translateX(0); }
   20% { transform: translateX(-4px); }
@@ -224,7 +190,15 @@ html, body, #root {
   80% { transform: translateX(4px); }
   100% { transform: translateX(0); }
 }
+.task-completed-animation { animation: vibrateTask 0.35s ease-in-out; }
 
-.task-completed-animation {
-  animation: vibrateTask 0.35s ease-in-out;
+/* COMPLETED TASK INPUT */
+.color-circle { padding: 0; }
+.color-circle::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 9999px;
+}
+.color-circle::-webkit-color-swatch {
+  border: none;
+  border-radius: 9999px;
 }

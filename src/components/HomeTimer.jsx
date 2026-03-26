@@ -1,8 +1,8 @@
-// HomeTimer.jsx
+// components/HomeTimer.jsx
 
 import { useEffect, useRef, useState, useCallback } from "react"
 
-const MAX_TOTAL_SECONDS = 12 * 60 * 60 // ⛔ Máximo 12 horas
+const MAX_TOTAL_SECONDS = 12 * 60 * 60
 
 function getSavedSettings() {
   const saved = JSON.parse(localStorage.getItem("focustar_settings"))
@@ -129,11 +129,8 @@ function HomeTimer({ language }) {
     setTotalSeconds(0)
   }
 
-  const inputStyle =
-    "w-12 sm:w-16 md:w-24 bg-transparent text-center outline-none font-mono text-4xl sm:text-5xl md:text-7xl"
-
-  const baseBtn =
-    "rounded-lg font-semibold transition-all duration-200 active:scale-95 hover:scale-105 shadow-md active:shadow-inner cursor-pointer"
+  const inputStyle = "w-12 sm:w-16 md:w-24 bg-transparent text-center outline-none font-mono text-4xl sm:text-5xl md:text-7xl"
+  const baseBtn = "rounded-lg font-semibold transition-all duration-200 active:scale-95 hover:scale-105 component-shadow-soft active:component-shadow cursor-pointer"
 
   return (
     <div
@@ -142,62 +139,72 @@ function HomeTimer({ language }) {
       }`}
       style={{ color: settings.textColor }}
     >
-      <h1 className="text-3xl sm:text-4xl md:text-5xl mb-6 text-center">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl mb-6 text-center font-bold text-shadow">
         {language === "es" ? "Temporizador" : "Timer"}
       </h1>
-
       <div
         className={`flex items-center font-semibold mb-10 gap-1 sm:gap-2 
           text-4xl sm:text-5xl md:text-7xl ${isFinished ? "text-red-500" : ""}`}
       >
-        <input
-          type="number"
-          value={String(hours).padStart(2, "0")}
-          onChange={(e) => updateTimePart("h", e.target.value)}
-          disabled={isRunning}
-          className={inputStyle}
-        />
+        <div>
+          <label htmlFor="hours" className="sr-only">Horas</label>
+          <input
+            id="hours"
+            type="number"
+            value={String(hours).padStart(2, "0")}
+            onChange={(e) => updateTimePart("h", e.target.value)}
+            disabled={isRunning}
+            className={inputStyle}
+            aria-label="Horas"
+          />
+        </div>
         :
-        <input
-          type="number"
-          value={String(minutes).padStart(2, "0")}
-          onChange={(e) => updateTimePart("m", e.target.value)}
-          disabled={isRunning}
-          className={inputStyle}
-        />
+        <div>
+          <label htmlFor="minutes" className="sr-only">Minutos</label>
+          <input
+            id="minutes"
+            type="number"
+            value={String(minutes).padStart(2, "0")}
+            onChange={(e) => updateTimePart("m", e.target.value)}
+            disabled={isRunning}
+            className={inputStyle}
+            aria-label="Minutos"
+          />
+        </div>
         :
-        <input
-          type="number"
-          value={String(seconds).padStart(2, "0")}
-          onChange={(e) => updateTimePart("s", e.target.value)}
-          disabled={isRunning}
-          className={inputStyle}
-        />
+        <div>
+          <label htmlFor="seconds" className="sr-only">Segundos</label>
+          <input
+            id="seconds"
+            type="number"
+            value={String(seconds).padStart(2, "0")}
+            onChange={(e) => updateTimePart("s", e.target.value)}
+            disabled={isRunning}
+            className={inputStyle}
+            aria-label="Segundos"
+          />
+        </div>
       </div>
-
       <div className="flex flex-wrap gap-3 justify-center">
         <button
           onClick={handleStart}
-          className={`${baseBtn} bg-green-600 hover:bg-green-700 text-[#EDEDED] text-sm sm:text-base px-4 sm:px-6 py-2`}
+          className={`${baseBtn} bg-green-400 hover:bg-green-500 text-[#121212] font-bold text-base sm:text-lg px-4 sm:px-6 py-2 text-shadow`}
         >
           {language === "es" ? "Iniciar" : "Play"}
         </button>
-
         <button
           onClick={handlePause}
-          className={`${baseBtn} bg-yellow-600 hover:bg-yellow-700 text-[#EDEDED] text-sm sm:text-base px-4 sm:px-6 py-2`}
+          className={`${baseBtn} bg-yellow-400 hover:bg-yellow-500 text-[#121212] font-bold text-base sm:text-lge px-4 sm:px-6 py-2 text-shadow`}
         >
           {language === "es" ? "Pausar" : "Pause"}
         </button>
-
         <button
           onClick={resetTimer}
-          className={`${baseBtn} bg-red-600 hover:bg-red-700 text-[#EDEDED] text-sm sm:text-base px-4 sm:px-6 py-2`}
+          className={`${baseBtn} bg-red-400 hover:bg-red-500 text-[#121212] font-bold text-base sm:text-lg px-4 sm:px-6 py-2 text-shadow`}
         >
-          Reset
+          {language === "es" ? "Reiniciar" : "Reset"}
         </button>
       </div>
-
       {toast && (
         <div className="toast text-sm sm:text-base mt-4 px-2 py-1 sm:px-4 sm:py-2">
           {toast}
@@ -205,7 +212,6 @@ function HomeTimer({ language }) {
       )}
     </div>
   )
-
 }
 
 export default HomeTimer

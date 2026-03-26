@@ -1,5 +1,4 @@
-// Header.jsx
-
+// components/Header.jsx
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,7 @@ export default function Header({ language, toggleLanguage }) {
   const [openSettings, setOpenSettings] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
   const [user, setUser] = useState(null);
-  const [openMenu, setOpenMenu] = useState(false); // para hamburguesa
+  const [openMenu, setOpenMenu] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,23 +41,19 @@ export default function Header({ language, toggleLanguage }) {
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-50 h-20 px-6 md:px-12 flex items-center justify-between backdrop-blur-md border-b border-(--text-color)/10 [box-shadow:var(--component-shadow)]">
-        {/* Logo */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="text-2xl md:text-3xl font-bold tracking-widest logo-pulse select-none cursor-pointer hover:opacity-80 transition text-shadow-(--text-shadow-strong)"
         >
           FOCUSTAR
         </button>
-
-        {/* Botones escritorio */}
-        <div className="hidden md:flex items-center gap-3 md:gap-5">
+        <div className="hidden lg:flex items-center gap-3 md:gap-5">
           <button
             onClick={toggleLanguage}
             className="btn-glow px-3 py-1 md:px-4 md:py-2 rounded border border-white/20 text-sm md:text-base"
           >
             {language === "es" ? "ES" : "EN"}
           </button>
-
           <button
             onClick={() => setOpenSettings(true)}
             className="btn-glow px-3 py-1 md:px-4 md:py-2 rounded border border-white/20 text-sm md:text-base flex items-center gap-1"
@@ -66,14 +61,21 @@ export default function Header({ language, toggleLanguage }) {
             <span className="icon-spin inline-block text-lg md:text-xl leading-none">⚙</span>
             {language === "es" ? "Configuración" : "Settings"}
           </button>
-
           {user ? (
-            <button
-              onClick={handleLogout}
-              className="btn-glow px-3 py-1 md:px-4 md:py-2 rounded border border-white/20 text-sm md:text-base"
-            >
-              {language === "es" ? "Cerrar sesión" : "Sign Out"}
-            </button>
+            <>
+              <button
+                onClick={() => navigate("/user")}
+                className="btn-glow px-3 py-1 md:px-4 md:py-2 rounded border border-white/20 text-sm md:text-base"
+              >
+                {language === "es" ? "Mi cuenta" : "My Account"}
+              </button>
+              <button
+                onClick={handleLogout}
+                className="btn-glow px-3 py-1 md:px-4 md:py-2 rounded border border-white/20 text-sm md:text-base"
+              >
+                {language === "es" ? "Cerrar sesión" : "Sign Out"}
+              </button>
+            </>
           ) : (
             <button
               onClick={() => setOpenLogin(true)}
@@ -83,91 +85,85 @@ export default function Header({ language, toggleLanguage }) {
             </button>
           )}
         </div>
-
-        {/* Botón hamburguesa */}
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <button
             onClick={() => setOpenMenu(!openMenu)}
             className="p-2 text-3xl font-bold cursor-pointer"
           >
-            {openMenu ? "✕" : "☰"} {/* ✕ para cerrar, ☰ para abrir */}
+            {openMenu ? "✕" : "☰"}
           </button>
         </div>
-
-        {/* LÍNEA ROJA */}
         <div className="header-line"></div>
       </header>
-
-      {/* Menú hamburguesa móvil */}
-      {/* Menú hamburguesa móvil */}
-      {/* Menú hamburguesa móvil */}
-{openMenu && (
-  <div className="absolute top-20 right-0 w-full bg-black/90 p-6 flex flex-col items-center justify-center gap-4 md:hidden z-50 rounded-lg shadow-lg">
-
-    <button
-      onClick={toggleLanguage}
-      className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
-    >
-      {language === "es" ? "ES" : "EN"}
-    </button>
-
-    <button
-      onClick={() => {
-        setOpenSettings(true);
-        setOpenMenu(false);
-      }}
-      className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold flex items-center justify-center gap-2"
-    >
-      <span className="icon-spin inline-block text-lg leading-none">⚙</span>
-      {language === "es" ? "Configuración" : "Settings"}
-    </button>
-
-    {user ? (
-      <button
-        onClick={() => {
-          handleLogout();
-          setOpenMenu(false);
-        }}
-        className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
-      >
-        {language === "es" ? "Cerrar sesión" : "Sign Out"}
-      </button>
-    ) : (
-      <button
-        onClick={() => {
-          setOpenLogin(true);
-          setOpenMenu(false);
-        }}
-        className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
-      >
-        {language === "es" ? "Iniciar sesión" : "Sign In"}
-      </button>
-    )}
-
-  </div>
-)}
-
-
-
+      {openMenu && (
+        <div className="fixed top-20 right-0 w-full backdrop-blur-md p-6 flex flex-col items-center justify-center gap-4 lg:hidden z-50 border-b border-(--text-color)/10 [box-shadow:var(--component-shadow)]">
+          <button
+            onClick={toggleLanguage}
+            className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
+          >
+            {language === "es" ? "ES" : "EN"}
+          </button>
+          <button
+            onClick={() => {
+              setOpenSettings(true);
+              setOpenMenu(false);
+            }}
+            className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold flex items-center justify-center gap-2"
+          >
+            <span className="icon-spin inline-block text-lg leading-none">⚙</span>
+            {language === "es" ? "Configuración" : "Settings"}
+          </button>
+          {user ? (
+            <>
+              <button
+                onClick={() => {
+                  navigate("/user");
+                  setOpenMenu(false);
+                }}
+                className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
+              >
+                {language === "es" ? "Mi cuenta" : "My Account"}
+              </button>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setOpenMenu(false);
+                }}
+                className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
+              >
+                {language === "es" ? "Cerrar sesión" : "Sign Out"}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => {
+                setOpenLogin(true);
+                setOpenMenu(false);
+              }}
+              className="btn-glow w-1/2 min-w-50 max-w-sm px-4 py-2 rounded text-sm font-bold"
+            >
+              {language === "es" ? "Iniciar sesión" : "Sign In"}
+            </button>
+          )}
+        </div>
+      )}
       <SettingsModal
         isOpen={openSettings}
         onClose={() => setOpenSettings(false)}
         language={language}
       />
-
       <div
-        className={`fixed top-0 right-0 h-full w-full z-60 shadow-lg
+        className={`fixed top-0 right-0 h-full w-full z-50 shadow-lg
           transform transition-transform duration-300 ease-in-out
           ${openLogin ? "translate-x-0" : "translate-x-full"}`}
       >
         <LoginSidebar
           isOpen={openLogin}
-          onClose={() => setOpenLogin(false)} // <--- esto se llama desde el botón interno
+          onClose={() => setOpenLogin(false)}
           language={language}
           handleGoogleLogin={handleGoogleLogin}
         />
       </div>
-
     </>
   );
 }
