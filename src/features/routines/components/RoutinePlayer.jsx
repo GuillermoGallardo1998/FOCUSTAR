@@ -8,6 +8,9 @@ import {
 } from "../services/routinesService";
 import { collection, doc, getDocs, getDoc, onSnapshot, query, orderBy, updateDoc, where } from "firebase/firestore";
 import { db } from "../../../services/firebaseConfig";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useOutletContext } from "react-router-dom";
 
 function getSettings() {
   return JSON.parse(localStorage.getItem("focustar_settings")) || {
@@ -17,7 +20,6 @@ function getSettings() {
   };
 }
 
-
 function RoutinePlayer({ routine }) {
   const [remaining, setRemaining] = useState(0);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
@@ -26,6 +28,8 @@ function RoutinePlayer({ routine }) {
   const remainingRef = useRef(remaining);
   const audioRef = useRef(null);
   const alarmTimeoutRef = useRef(null);
+  const toastShownRef = useRef(false); 
+  const { language } = useOutletContext();
 
   useEffect(() => {
     remainingRef.current = remaining;
@@ -174,7 +178,26 @@ function RoutinePlayer({ routine }) {
     const runningSnap = await getDocs(runningRoutinesQuery);
 
     if (!routine.isRunning && !runningSnap.empty) {
-      alert("Otra rutina está corriendo. Pausa esa primero para continuar.");
+      if (!toastShownRef.current) {
+        toast.warn(
+        language === "es" 
+          ? "Otra rutina está corriendo. Pausa esa primero para continuar." 
+          : "Another routine is running. Pause it first to continue.",
+          {
+            position: "bottom-center",
+            autoClose: 3000,
+            pauseOnHover: true,
+            theme: "dark",
+            toastId: "routine-conflict",
+            style: {
+              textAlign: "center",
+              padding: "16px 24px",
+              fontSize: "16px",
+            },
+          }
+        );
+        toastShownRef.current = true;
+      }
       return;
     }
 
@@ -182,8 +205,8 @@ function RoutinePlayer({ routine }) {
 
     if (startFromZero) {
       await startRoutine(routine.id, routine.uid);
-      } else {
-        await updateDoc(routineRef, {
+    } else {
+      await updateDoc(routineRef, {
         isRunning: true,
         blockStartedAt: new Date()
       });
@@ -192,11 +215,10 @@ function RoutinePlayer({ routine }) {
 
   const handlePause = async () => {
     setAudioUnlocked(true);
-
     stopAlarm();
+    toastShownRef.current = false;
 
     const routineRef = doc(db, "routines", routine.id);
-
     await updateDoc(routineRef, {
       isRunning: false,
       remainingSeconds: remainingRef.current
@@ -211,6 +233,7 @@ function RoutinePlayer({ routine }) {
   const handleReset = () => {
     setAudioUnlocked(true);
     stopAlarm();
+    toastShownRef.current = false;
     resetRoutine(routine.id);
   };
 

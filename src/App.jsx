@@ -3,6 +3,8 @@
 import { BrowserRouter, Routes, Route, useParams, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { auth } from "./services/firebaseConfig";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import NotFoundPage from "./pages/NotFoundPage";
 import HomePage from "./pages/HomePage";
@@ -88,6 +90,18 @@ function App() {
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <ToastContainer
+          position="bottom-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+          pauseOnFocusLoss
+          theme="dark"
+          limit={3}
+        />
       </main>
     </BrowserRouter>
   );

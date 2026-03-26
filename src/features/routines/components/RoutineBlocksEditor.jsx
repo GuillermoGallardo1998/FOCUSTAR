@@ -19,7 +19,7 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
   const [newTitle, setNewTitle] = useState("");
   const [newNote, setNewNote] = useState("");
   const [newColor, setNewColor] = useState("#1F3C88");
-
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [newHours, setNewHours] = useState("");
   const [newMinutes, setNewMinutes] = useState("");
   const [newSeconds, setNewSeconds] = useState("");
@@ -131,10 +131,22 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
     await updateRoutineTimestamp(routineId);
     await resetRoutine(routineId);
 
-    alert(
+    toast.warn(
       language === "es"
         ? "Se reinició el contador porque se editó la lista."
-        : "The counter has been reset because the list was edited."
+        : "The counter has been reset because the list was edited.",
+      {
+        position: "bottom-center",
+        autoClose: 4000,
+        pauseOnHover: true,
+        theme: "dark",
+        toastId: "routine-conflict",
+        style: {
+          textAlign: "center",
+          padding: "16px 24px",  
+          fontSize: "16px", 
+        },
+      }
     );
 
     setBlocks((prev) =>
@@ -164,18 +176,15 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
     setBlocks((prev) => prev.filter((b) => b.id !== blockId));
   };
 
-  const handleDeleteRoutine = async () => {
-    if (
-      !confirm(
-        language === "es"
-          ? "¿Seguro que quieres eliminar toda la rutina?"
-          : "Are you sure you want to delete the entire routine?"
-      )
-    )
-      return;
-
+  const confirmDelete = async () => {
+    setShowDeleteModal(false);
     await deleteRoutine(routineId);
     onRoutineDeleted?.();
+    toast.success(
+      language === "es"
+        ? "Rutina eliminada correctamente"
+        : "Routine deleted successfully"
+    );
   };
 
   const moveBlockUp = async (index) => {
@@ -186,7 +195,6 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
     setBlocks(updatedBlocks);
     await saveBlocksOrder(updatedBlocks);
   };
-
 
   const moveBlockDown = async (index) => {
     if (index === blocks.length - 1) return;
@@ -500,13 +508,42 @@ function RoutineBlocksEditor({ routineId, language, onRoutineDeleted }) {
         </div>
       </div>
       <button
-        onClick={handleDeleteRoutine}
+        onClick={() => setShowDeleteModal(true)}
         className="bg-red-600 hover:bg-red-700 text-[#EDEDED] text-xl px-4 py-2 rounded-2xl [box-shadow:var(--component-shadow-soft)] cursor-pointer font-bold text-shadow-(--text-shadow-strong)"
       >
         {language === "es"
           ? "Eliminar rutina"
           : "Delete routine"}
       </button>
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowDeleteModal(false)}
+          />
+          <div className="relative flex flex-col justify-center items-center gap-4 bg-(--bg-color) rounded-2xl m-6 p-6 w-80 [box-shadow:var(--component-shadow-soft)] animate-scaleIn transition-all duration-300 ease-in-out">
+            <h3 className="text-lg font-semibold text-center">
+              {language === "es"
+                ? "¿Quieres borrar esta rutina?"
+                : "Do you want to delete this routine?"}
+            </h3>
+            <div className="w-full flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 px-4 py-2 rounded-xl bg-(--text-color) text-(--bg-color) font-bold hover:scale-90 transition-all duration-300 ease-in-out [box-shadow:var(--component-shadow-soft)]"
+              >
+                {language === "es" ? "No" : "No"}
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 rounded-xl bg-red-700 text-(--smoke-white) font-bold hover:scale-90 transition-all duration-300 ease-in-out [box-shadow:var(--component-shadow-soft)]"
+              >
+                {language === "es" ? "Sí" : "Yes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
