@@ -151,7 +151,7 @@ function UserAboutPage() {
           <div className="flex flex-col md:flex-row items-center gap-10 w-full max-w-5xl">
             <div className="shrink-0">
               <img
-                src="/images/PhotoMemo.jpg"
+                src="/images/PhotoMemo.jpeg"
                 alt="Guillermo Gallardo"
                 className="w-48 h-48 object-cover rounded-full border border-(--text-color)/20 [box-shadow:var(--component-shadow)]"
               />
